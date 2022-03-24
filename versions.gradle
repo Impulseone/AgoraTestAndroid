@@ -14,4 +14,7 @@ ext {
 
     //agora
     agora_rtm_sdk = "1.4.10"
+
+    //navigation
+    nav_version = "2.4.1"
 }
