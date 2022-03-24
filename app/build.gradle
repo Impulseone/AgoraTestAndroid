@@ -8,6 +8,10 @@ apply from: "$rootDir/versions.gradle"
 android {
     compileSdk 32
 
+    buildFeatures {
+        viewBinding true
+    }
+
     defaultConfig {
         applicationId "com.example.agoratestandroid"
         minSdk 21
@@ -35,23 +39,26 @@ android {
 
 dependencies {
 
-    //core
+    //Core
     implementation "androidx.core:core-ktx:$core_ktx"
     implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    //testing
+    //Testing
     testImplementation "junit:junit:$junit"
     androidTestImplementation "androidx.test.ext:junit:$test_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
 
-    //agora
+    //Agora
     implementation "com.github.agorabuilder:rtm-sdk:$agora_rtm_sdk"
 
-    // Navigation
+    //Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation "androidx.navigation:navigation-testing:$nav_version"
+
+    //ViewBinding
+    implementation "com.github.kirich1409:viewbindingpropertydelegate:$view_binding"
 }
