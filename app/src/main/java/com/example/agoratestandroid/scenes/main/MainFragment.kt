@@ -3,6 +3,7 @@ package com.example.agoratestandroid.scenes.main
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.extensions.collectFlow
+import com.example.agoratestandroid.common.extensions.showSnackbar
 import com.example.agoratestandroid.databinding.SceneMainBinding
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.scenes.login.LoginFragment
@@ -39,14 +41,26 @@ class MainFragment : Fragment(R.layout.scene_main) {
         collectFlow(viewModel.isLogoutSuccessFlow) {
             when (it) {
                 is LoadingResult.Loading -> {
-                    Log.e(TAG, "loading")
+                    showLoading(true)
                 }
                 is LoadingResult.Success -> findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
-                is LoadingResult.Failure -> Log.e(TAG, "${it.throwable.message}")
+                is LoadingResult.Failure -> {
+                    showLoading(false)
+                    showSnackbar(it.throwable.message)
+                    Log.e(TAG, "${it.throwable.message}")
+                }
                 is LoadingResult.Empty -> {
+                    showLoading(false)
                     Log.e(TAG, "logout result is empty")
                 }
             }
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        with(binding) {
+            progressbar.isVisible = isLoading
+            logoutBt.isVisible = !isLoading
         }
     }
 
