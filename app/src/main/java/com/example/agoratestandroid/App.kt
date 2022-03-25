@@ -3,6 +3,8 @@ package com.example.agoratestandroid
 import android.app.Application
 import com.example.agoratestandroid.BuildConfig
 import com.example.agoratestandroid.di.chatManagerModule
+import com.example.agoratestandroid.di.repositoryModule
+import com.example.agoratestandroid.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,7 +18,9 @@ class App : Application() {
             androidContext(this@App)
             koin.loadModules(
                 listOf(
-                    chatManagerModule
+                    chatManagerModule,
+                    viewModelModule,
+                    repositoryModule
                 )
             )
         }

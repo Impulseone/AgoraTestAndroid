@@ -5,6 +5,9 @@ import android.util.Log
 import com.example.agoratestandroid.BuildConfig
 import com.example.agoratestandroid.R
 import io.agora.rtm.*
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 
 class ChatManager(mContext: Context) {
     private val rtmClient: RtmClient
@@ -114,31 +117,36 @@ class ChatManager(mContext: Context) {
         private val TAG = ChatManager::class.java.simpleName
     }
 
-    fun login(username: String, onSuccess: () -> Unit, onFailure: (errorInfo: ErrorInfo) -> Unit) {
-        rtmClient.login(
-            null,
-            username,
-            object : ResultCallback<Void?> {
+    fun login(username: String) =
+        callbackFlow {
+            val callback = object : ResultCallback<Void?> {
                 override fun onSuccess(responseInfo: Void?) {
-                    onSuccess()
+                    trySend(true)
                 }
 
                 override fun onFailure(errorInfo: ErrorInfo) {
-                    onFailure(errorInfo)
+                    trySend(false)
                 }
-            })
-    }
+            }
+            rtmClient.login(
+                null,
+                username,
+                callback
+            )
+            awaitClose {}
+        }
 
-    fun logout(onSuccess: () -> Unit, onFailure: (errorInfo: ErrorInfo) -> Unit) {
-        rtmClient.logout(
-            object : ResultCallback<Void?> {
-                override fun onSuccess(responseInfo: Void?) {
-                    onSuccess()
-                }
+    fun logout() = callbackFlow {
+        val callback = object : ResultCallback<Void?> {
+            override fun onSuccess(responseInfo: Void?) {
+                trySend(true)
+            }
 
-                override fun onFailure(errorInfo: ErrorInfo) {
-                    onFailure(errorInfo)
-                }
-            })
+            override fun onFailure(errorInfo: ErrorInfo) {
+                trySend(false)
+            }
+        }
+        rtmClient.logout(callback)
+        awaitClose {}
     }
 }

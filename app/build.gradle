@@ -60,6 +60,10 @@ dependencies {
     implementation "io.insert-koin:koin-core:$koin"
     implementation "io.insert-koin:koin-android:$koin"
 
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle"
+
     //Testing
     testImplementation "junit:junit:$junit"
     androidTestImplementation "androidx.test.ext:junit:$test_junit"
