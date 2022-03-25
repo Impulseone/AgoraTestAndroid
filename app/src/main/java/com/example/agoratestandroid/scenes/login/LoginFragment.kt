@@ -10,10 +10,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
+import com.example.agoratestandroid.common.extensions.collectFlow
 import com.example.agoratestandroid.databinding.SceneLoginBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.example.agoratestandroid.models.LoadingResult
 
 class LoginFragment : Fragment(R.layout.scene_login) {
 
@@ -33,11 +35,15 @@ class LoginFragment : Fragment(R.layout.scene_login) {
     }
 
     private fun bindViewModel() {
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isLoginSuccessFlow.collectLatest {
-                    if (it) findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
-                    else Log.e(TAG, "login failed")
+        collectFlow(viewModel.isLoginSuccessFlow) {
+            when (it) {
+                is LoadingResult.Loading -> {
+                    Log.e(TAG, "loading")
+                }
+                is LoadingResult.Success -> findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                is LoadingResult.Failure -> Log.e(TAG, "${it.throwable.message}")
+                is LoadingResult.Empty -> {
+                    Log.e(TAG, "login result is empty")
                 }
             }
         }

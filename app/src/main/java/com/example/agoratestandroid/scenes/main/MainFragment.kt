@@ -10,7 +10,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
+import com.example.agoratestandroid.common.extensions.collectFlow
 import com.example.agoratestandroid.databinding.SceneMainBinding
+import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.scenes.login.LoginFragment
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,17 +30,21 @@ class MainFragment : Fragment(R.layout.scene_main) {
     }
 
     private fun bindLogoutButton() {
-        binding.logoutBt.setOnClickListener{
+        binding.logoutBt.setOnClickListener {
             viewModel.logout()
         }
     }
 
     private fun bindViewModel() {
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isLogoutSuccessFlow.collectLatest {
-                    if (it) findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
-                    else Log.e(TAG, "logout failed")
+        collectFlow(viewModel.isLogoutSuccessFlow) {
+            when (it) {
+                is LoadingResult.Loading -> {
+                    Log.e(TAG, "loading")
+                }
+                is LoadingResult.Success -> findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+                is LoadingResult.Failure -> Log.e(TAG, "${it.throwable.message}")
+                is LoadingResult.Empty -> {
+                    Log.e(TAG, "logout result is empty")
                 }
             }
         }

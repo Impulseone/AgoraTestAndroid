@@ -1,14 +1,17 @@
-package com.example.agoratestandroid.chatManager
+package com.example.agoratestandroid.common.chatManager
 
 import android.content.Context
 import android.util.Log
 import com.example.agoratestandroid.BuildConfig
 import com.example.agoratestandroid.R
+import com.example.agoratestandroid.models.AuthResultCallback
 import io.agora.rtm.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
+import com.example.agoratestandroid.models.LoadingResult
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChatManager(mContext: Context) {
     private val rtmClient: RtmClient
     private val sendMessageOptions: SendMessageOptions
@@ -119,15 +122,12 @@ class ChatManager(mContext: Context) {
 
     fun login(username: String) =
         callbackFlow {
-            val callback = object : ResultCallback<Void?> {
-                override fun onSuccess(responseInfo: Void?) {
-                    trySend(true)
-                }
-
-                override fun onFailure(errorInfo: ErrorInfo) {
-                    trySend(false)
-                }
-            }
+            trySend(LoadingResult.Loading)
+            val callback = AuthResultCallback({
+                trySend(LoadingResult.Success(true))
+            },{
+                trySend(LoadingResult.Failure(Throwable(it?.errorDescription)))
+            })
             rtmClient.login(
                 null,
                 username,
@@ -137,15 +137,12 @@ class ChatManager(mContext: Context) {
         }
 
     fun logout() = callbackFlow {
-        val callback = object : ResultCallback<Void?> {
-            override fun onSuccess(responseInfo: Void?) {
-                trySend(true)
-            }
-
-            override fun onFailure(errorInfo: ErrorInfo) {
-                trySend(false)
-            }
-        }
+        trySend(LoadingResult.Loading)
+        val callback = AuthResultCallback({
+            trySend(LoadingResult.Success(true))
+        },{
+            trySend(LoadingResult.Failure(Throwable(it?.errorDescription)))
+        })
         rtmClient.logout(callback)
         awaitClose {}
     }
