@@ -1,4 +1,4 @@
-package com.example.agoratestandroid.rtmtutorial
+package com.example.agoratestandroid.chatManager
 
 import io.agora.rtm.RtmMessage
 import java.util.ArrayList

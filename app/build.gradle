@@ -46,19 +46,22 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    //Testing
-    testImplementation "junit:junit:$junit"
-    androidTestImplementation "androidx.test.ext:junit:$test_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
-
     //Agora
     implementation "com.github.agorabuilder:rtm-sdk:$agora_rtm_sdk"
 
     //Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-testing:$nav_version"
 
     //ViewBinding
     implementation "com.github.kirich1409:viewbindingpropertydelegate:$view_binding"
+
+    // Koin
+    implementation "io.insert-koin:koin-core:$koin"
+    implementation "io.insert-koin:koin-android:$koin"
+
+    //Testing
+    testImplementation "junit:junit:$junit"
+    androidTestImplementation "androidx.test.ext:junit:$test_junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
 }

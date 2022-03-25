@@ -20,4 +20,7 @@ ext {
 
     //viewBinding
     view_binding = "1.4.6"
+
+    //DI
+    koin = "3.1.3"
 }

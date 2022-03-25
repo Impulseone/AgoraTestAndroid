@@ -8,12 +8,13 @@ import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
 import com.example.agoratestandroid.databinding.SceneMainBinding
-import com.example.agoratestandroid.rtmtutorial.App
+import com.example.agoratestandroid.chatManager.ChatManager
 import com.example.agoratestandroid.scenes.login.LoginFragment
-import io.agora.rtm.ErrorInfo
-import io.agora.rtm.ResultCallback
+import org.koin.android.ext.android.inject
 
 class MainFragment : Fragment(R.layout.scene_main) {
+
+    private val chatManager: ChatManager by inject()
     private val binding: SceneMainBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -23,14 +24,10 @@ class MainFragment : Fragment(R.layout.scene_main) {
 
     private fun bindLogoutButton() {
         binding.logoutBt.setOnClickListener {
-            App.instance.chatManager.rtmClient.logout(object : ResultCallback<Void?> {
-                override fun onSuccess(p0: Void?) {
-                    findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
-                }
-
-                override fun onFailure(errorInfo: ErrorInfo) {
-                    Log.e(TAG, "logout failed: " + errorInfo.errorCode)
-                }
+            chatManager.logout({
+                findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+            }, {
+                Log.e(TAG, "logout failed: " + it.errorCode)
             })
         }
     }

@@ -1,28 +1,18 @@
-package com.example.agoratestandroid.rtmtutorial
+package com.example.agoratestandroid.chatManager
 
 import android.content.Context
 import android.util.Log
-import io.agora.rtm.RtmClient
-import io.agora.rtm.SendMessageOptions
-import io.agora.rtm.RtmClientListener
-import com.example.agoratestandroid.R
-import io.agora.rtm.RtmMessage
-import io.agora.rtm.RtmImageMessage
-import io.agora.rtm.RtmFileMessage
-import io.agora.rtm.RtmMediaOperationProgress
 import com.example.agoratestandroid.BuildConfig
-import java.lang.Exception
-import java.lang.RuntimeException
+import com.example.agoratestandroid.R
+import io.agora.rtm.*
 
-class ChatManager(private val mContext: Context) {
-    lateinit var rtmClient: RtmClient
-        private set
-    lateinit var sendMessageOptions: SendMessageOptions
-        private set
+class ChatManager(mContext: Context) {
+    private val rtmClient: RtmClient
+    private val sendMessageOptions: SendMessageOptions
     private val mListenerList: MutableList<RtmClientListener> = mutableListOf()
     private val mMessagePool = RtmMessagePool()
 
-    fun init() {
+    init {
         val appID = mContext.getString(R.string.app_id)
         try {
             rtmClient = RtmClient.createInstance(mContext, appID, object : RtmClientListener {
@@ -106,11 +96,11 @@ class ChatManager(private val mContext: Context) {
     }
 
     fun enableOfflineMessage(enabled: Boolean) {
-        sendMessageOptions!!.enableOfflineMessaging = enabled
+        sendMessageOptions.enableOfflineMessaging = enabled
     }
 
     val isOfflineMessageEnabled: Boolean
-        get() = sendMessageOptions!!.enableOfflineMessaging
+        get() = sendMessageOptions.enableOfflineMessaging
 
     fun getAllOfflineMessages(peerId: String?): List<RtmMessage>? {
         return mMessagePool.getAllOfflineMessages(peerId!!)
@@ -122,5 +112,33 @@ class ChatManager(private val mContext: Context) {
 
     companion object {
         private val TAG = ChatManager::class.java.simpleName
+    }
+
+    fun login(username: String, onSuccess: () -> Unit, onFailure: (errorInfo: ErrorInfo) -> Unit) {
+        rtmClient.login(
+            null,
+            username,
+            object : ResultCallback<Void?> {
+                override fun onSuccess(responseInfo: Void?) {
+                    onSuccess()
+                }
+
+                override fun onFailure(errorInfo: ErrorInfo) {
+                    onFailure(errorInfo)
+                }
+            })
+    }
+
+    fun logout(onSuccess: () -> Unit, onFailure: (errorInfo: ErrorInfo) -> Unit) {
+        rtmClient.logout(
+            object : ResultCallback<Void?> {
+                override fun onSuccess(responseInfo: Void?) {
+                    onSuccess()
+                }
+
+                override fun onFailure(errorInfo: ErrorInfo) {
+                    onFailure(errorInfo)
+                }
+            })
     }
 }
