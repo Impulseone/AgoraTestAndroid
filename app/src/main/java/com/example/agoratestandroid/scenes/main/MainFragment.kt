@@ -24,11 +24,18 @@ class MainFragment : Fragment(R.layout.scene_main) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
         bindLogoutButton()
+        bindChatButton()
     }
 
     private fun bindLogoutButton() {
-        binding.logoutBt.setOnClickListener {
+        binding.logoutBtn.setOnClickListener {
             viewModel.logout()
+        }
+    }
+
+    private fun bindChatButton() {
+        binding.chatBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_personalChatFragment)
         }
     }
 
@@ -55,7 +62,7 @@ class MainFragment : Fragment(R.layout.scene_main) {
     private fun showLoading(isLoading: Boolean) {
         with(binding) {
             progressbar.isVisible = isLoading
-            logoutBt.isVisible = !isLoading
+            logoutBtn.isVisible = !isLoading
         }
     }
 

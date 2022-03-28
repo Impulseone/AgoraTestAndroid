@@ -21,6 +21,14 @@
         <action
             android:id="@+id/action_mainFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_personalChatFragment"
+            app:destination="@id/personalChatFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/personalChatFragment"
+        android:name="com.example.agoratestandroid.scenes.personalChat.PersonalChatFragment"
+        android:label="fragment_personal_chat"
+        tools:layout="@layout/fragment_personal_chat" />
 
 </navigation>
