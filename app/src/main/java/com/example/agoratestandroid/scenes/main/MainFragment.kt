@@ -5,9 +5,6 @@ import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
@@ -16,8 +13,6 @@ import com.example.agoratestandroid.common.extensions.showSnackbar
 import com.example.agoratestandroid.databinding.SceneMainBinding
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.scenes.login.LoginFragment
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainFragment : Fragment(R.layout.scene_main) {
