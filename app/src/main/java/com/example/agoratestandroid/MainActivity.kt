@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     // Message content
     private var message_content: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

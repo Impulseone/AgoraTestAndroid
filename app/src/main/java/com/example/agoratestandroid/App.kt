@@ -2,7 +2,7 @@ package com.example.agoratestandroid
 
 import android.app.Application
 import com.example.agoratestandroid.di.chatManagerModule
-import com.example.agoratestandroid.di.repositoryModule
+import com.example.agoratestandroid.di.servicesModule
 import com.example.agoratestandroid.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -19,7 +19,7 @@ class App : Application() {
                 listOf(
                     chatManagerModule,
                     viewModelModule,
-                    repositoryModule
+                    servicesModule
                 )
             )
         }

@@ -12,6 +12,8 @@
     <string name="channel_name">Channel name</string>
     <string name="peer_name">Peer name</string>
     <string name="chat">Чат</string>
+    <string name="input_message">Введите сообщение…</string>
+    <string name="send_message">Отправить</string>
 
     <string name="app_id">47f38cba6b0e41828c054c04d4b781ca</string>
     <string name="login">Войти</string>

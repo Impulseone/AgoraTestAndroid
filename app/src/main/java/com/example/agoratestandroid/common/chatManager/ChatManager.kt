@@ -9,6 +9,7 @@ import io.agora.rtm.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import com.example.agoratestandroid.models.LoadingResult
+import com.example.agoratestandroid.models.PeerMessage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,6 +35,10 @@ class ChatManager(mContext: Context) {
                         // message, this message is unread yet. Here we also
                         // take it as an offline message.
                         mMessagePool.insertOfflineMessage(rtmMessage, peerId)
+
+                        val text = """Message received from $peerId Message: ${rtmMessage.text}"""
+                        Log.e("ChatManager", text)
+
                     } else {
                         for (listener in mListenerList) {
                             listener.onMessageReceived(rtmMessage, peerId)
@@ -116,16 +121,12 @@ class ChatManager(mContext: Context) {
         mMessagePool.removeAllOfflineMessages(peerId!!)
     }
 
-    companion object {
-        private val TAG = ChatManager::class.java.simpleName
-    }
-
     fun login(username: String) =
         callbackFlow {
             trySend(LoadingResult.Loading)
             val callback = AuthResultCallback({
                 trySend(LoadingResult.Success(true))
-            },{
+            }, {
                 trySend(LoadingResult.Failure(Throwable(it?.errorDescription)))
             })
             rtmClient.login(
@@ -140,10 +141,35 @@ class ChatManager(mContext: Context) {
         trySend(LoadingResult.Loading)
         val callback = AuthResultCallback({
             trySend(LoadingResult.Success(true))
-        },{
+        }, {
             trySend(LoadingResult.Failure(Throwable(it?.errorDescription)))
         })
         rtmClient.logout(callback)
         awaitClose {}
+    }
+
+    fun sendPeerMessage(peerMessage: PeerMessage) {
+        val rtmMessage = rtmClient.createMessage()
+        rtmMessage.text = peerMessage.text
+        rtmClient.sendMessageToPeer(
+            peerMessage.toId,
+            rtmMessage,
+            SendMessageOptions(),
+            object : ResultCallback<Void?> {
+                override fun onSuccess(aVoid: Void?) {
+                    val text = "Message sent from ${peerMessage.fromId} To ${peerMessage.toId} ： ${peerMessage.text}"
+                    Log.e("ChatManager", text)
+                }
+
+                override fun onFailure(errorInfo: ErrorInfo) {
+                    val text =
+                        "Message fails to send from ${peerMessage.fromId} To ${peerMessage.toId} Error ： $errorInfo\n"
+                    Log.e("ChatManager", text)
+                }
+            })
+    }
+
+    companion object {
+        private val TAG = ChatManager::class.java.simpleName
     }
 }

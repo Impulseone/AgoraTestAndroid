@@ -3,9 +3,11 @@ package com.example.agoratestandroid.scenes.main
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.extensions.collectFlow
@@ -19,6 +21,7 @@ class MainFragment : Fragment(R.layout.scene_main) {
 
     private val binding: SceneMainBinding by viewBinding()
     private val viewModel: MainViewModel by viewModel()
+    private val navArgs by navArgs<MainFragmentArgs>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,7 +38,13 @@ class MainFragment : Fragment(R.layout.scene_main) {
 
     private fun bindChatButton() {
         binding.chatBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_personalChatFragment)
+            findNavController().navigate(
+                R.id.action_mainFragment_to_personalChatFragment,
+                bundleOf(
+                    "userId" to navArgs.userId,
+                    "peerId" to binding.friendNameEt.text.toString()
+                )
+            )
         }
     }
 

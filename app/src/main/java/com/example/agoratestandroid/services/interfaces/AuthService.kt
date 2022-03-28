@@ -1,4 +1,4 @@
-package com.example.agoratestandroid.services
+package com.example.agoratestandroid.services.interfaces
 
 import com.example.agoratestandroid.models.LoadingResult
 import kotlinx.coroutines.flow.Flow

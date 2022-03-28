@@ -8,27 +8,48 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.agoratestandroid.scenes.login.LoginFragment"
-        tools:layout="@layout/scene_login" >
+        tools:layout="@layout/scene_login">
         <action
             android:id="@+id/action_loginFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment">
+            <argument
+                android:name="userId"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.agoratestandroid.scenes.main.MainFragment"
         android:label="scene_main"
-        tools:layout="@layout/scene_main" >
+        tools:layout="@layout/scene_main">
+        <argument
+            android:name="userId"
+            app:argType="string" />
         <action
             android:id="@+id/action_mainFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
             android:id="@+id/action_mainFragment_to_personalChatFragment"
-            app:destination="@id/personalChatFragment" />
+            app:destination="@id/personalChatFragment">
+            <argument
+                android:name="userId"
+                app:argType="string" />
+            <argument
+                android:name="peerId"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/personalChatFragment"
         android:name="com.example.agoratestandroid.scenes.personalChat.PersonalChatFragment"
         android:label="fragment_personal_chat"
-        tools:layout="@layout/fragment_personal_chat" />
+        tools:layout="@layout/scene_personal_chat">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <argument
+            android:name="peerId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

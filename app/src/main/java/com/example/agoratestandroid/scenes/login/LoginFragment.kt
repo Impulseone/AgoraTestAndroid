@@ -3,6 +3,7 @@ package com.example.agoratestandroid.scenes.login
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -29,7 +30,7 @@ class LoginFragment : Fragment(R.layout.scene_login) {
         collectFlow(viewModel.isLoginSuccessFlow) {
             when (it) {
                 is LoadingResult.Loading -> showLoading(true)
-                is LoadingResult.Success -> findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                is LoadingResult.Success -> findNavController().navigate(R.id.action_loginFragment_to_mainFragment, bundleOf("userId" to binding.usernameEt.text.toString()))
                 is LoadingResult.Failure -> {
                     showLoading(false)
                     showSnackbar(it.throwable.message)
