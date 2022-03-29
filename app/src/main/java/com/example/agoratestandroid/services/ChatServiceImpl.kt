@@ -22,7 +22,7 @@ class ChatServiceImpl(private val rtmClientManager: RtmClientManager) : ChatServ
             SendMessageOptions(),
             object : ResultCallback<Void?> {
                 override fun onSuccess(p0: Void?) {
-                    trySend(LoadingResult.Success(true))
+                    trySend(LoadingResult.Success(peerMessage.text))
                 }
                 override fun onFailure(p0: ErrorInfo?) {
                     trySend(LoadingResult.Failure(Throwable(p0?.errorDescription)))

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class PersonalChatViewModel(private val chatService: ChatService) : ViewModel() {
 
-    val isSendMessageSuccessFlow = MutableSharedFlow<LoadingResult<Boolean>>()
+    val isSendMessageSuccessFlow = MutableSharedFlow<LoadingResult<String>>()
     val receiveMessageFlow: Flow<LoadingResult<String>>
 
     private val chatRtmListener = ChatRtmListener()
