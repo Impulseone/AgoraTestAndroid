@@ -1,21 +1,12 @@
 <resources>
     <string name="app_name">AgoraMessenger</string>
-    <string name="login_button">Login</string>
-    <string name="logout_button">Logout</string>
-    <string name="join_button">Join</string>
-    <string name="leave_button">Leave</string>
-    <string name="send_peer_msg_button">Peer MSG</string>
-    <string name="send_channel_msg_button">Group MSG</string>
     <string name="uid">Имя пользователя</string>
     <string name="friend_id">Имя друга</string>
     <string name="msg">Enter your message</string>
-    <string name="channel_name">Channel name</string>
-    <string name="peer_name">Peer name</string>
     <string name="chat">Чат</string>
     <string name="input_message">Введите сообщение…</string>
     <string name="send_message">Отправить</string>
 
-    <string name="app_id">47f38cba6b0e41828c054c04d4b781ca</string>
     <string name="login">Войти</string>
     <string name="logout">Выйти</string>
 </resources>

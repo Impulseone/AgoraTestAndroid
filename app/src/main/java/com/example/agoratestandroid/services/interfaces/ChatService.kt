@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChatService {
     fun sendPeerMessage(peerMessage: PeerMessage): Flow<LoadingResult<Boolean>>
-
-    fun listenReceivedMessages(): Flow<LoadingResult<String>>
+    fun listenReceivedMessages(rtmClientListener: RtmClientListener)
+    fun stopListeningMessages(rtmClientListener: RtmClientListener)
 }
