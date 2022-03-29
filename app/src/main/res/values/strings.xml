@@ -2,7 +2,6 @@
     <string name="app_name">AgoraMessenger</string>
     <string name="uid">Имя пользователя</string>
     <string name="friend_id">Имя друга</string>
-    <string name="msg">Enter your message</string>
     <string name="chat">Чат</string>
     <string name="input_message">Введите сообщение…</string>
     <string name="send_message">Отправить</string>
