@@ -41,8 +41,8 @@ class MainFragment : Fragment(R.layout.scene_main) {
             findNavController().navigate(
                 R.id.action_mainFragment_to_personalChatFragment,
                 bundleOf(
-                    "userId" to navArgs.userId,
-                    "peerId" to binding.friendNameEt.text.toString()
+                    USER_ID to navArgs.userId,
+                    PEER_ID to binding.friendNameEt.text.toString()
                 )
             )
         }
@@ -77,5 +77,7 @@ class MainFragment : Fragment(R.layout.scene_main) {
 
     companion object {
         private val TAG: String = LoginFragment::class.java.simpleName
+        private const val USER_ID: String = "userId"
+        private const val PEER_ID: String = "peerId"
     }
 }

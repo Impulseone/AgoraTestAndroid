@@ -41,6 +41,10 @@ class PersonalChatFragment : Fragment(R.layout.scene_personal_chat) {
             collectFlow(receiveMessageFlow){
                 when(it){
                     is LoadingResult.Success -> showSnackbar(it.data)
+                    is LoadingResult.Failure -> {
+                        showSnackbar(it.throwable.message)
+                    }
+                    else->{}
                 }
             }
         }
