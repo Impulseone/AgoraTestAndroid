@@ -3,7 +3,7 @@ package com.example.agoratestandroid.common.chatManager
 import io.agora.rtm.ErrorInfo
 import io.agora.rtm.ResultCallback
 
-class ChatManagerCallback(
+class ActionCallback(
     private val onSuccessResult: () -> Unit,
     private val onFailureResult: (errorInfo: ErrorInfo?) -> Unit
 ) :

@@ -20,22 +20,34 @@ class PersonalChatFragment : Fragment(R.layout.scene_personal_chat) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
+        bindTitle()
         bindSendMessageBtn()
     }
 
     private fun bindViewModel() {
-        collectFlow(viewModel.isSendMessageSuccessFlow) {
-            when (it) {
-                is LoadingResult.Loading -> {}
-                is LoadingResult.Success -> showSnackbar("send message success")
-                is LoadingResult.Failure -> {
-                    showSnackbar(it.throwable.message)
+        with(viewModel) {
+            collectFlow(isSendMessageSuccessFlow) {
+                when (it) {
+                    is LoadingResult.Loading -> {}
+                    is LoadingResult.Success -> showSnackbar("send message success")
+                    is LoadingResult.Failure -> {
+                        showSnackbar(it.throwable.message)
+                    }
+                    is LoadingResult.Empty -> {
+                        showSnackbar("login result is empty")
+                    }
                 }
-                is LoadingResult.Empty -> {
-                    showSnackbar("login result is empty")
+            }
+            collectFlow(receiveMessageFlow){
+                when(it){
+                    is LoadingResult.Success -> showSnackbar(it.data)
                 }
             }
         }
+    }
+
+    private fun bindTitle(){
+        binding.friendId.text = navArgs.peerId
     }
 
     private fun bindSendMessageBtn() {
