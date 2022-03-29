@@ -1,9 +1,9 @@
-package com.example.agoratestandroid.models
+package com.example.agoratestandroid.common.chatManager
 
 import io.agora.rtm.ErrorInfo
 import io.agora.rtm.ResultCallback
 
-class AuthResultCallback(
+class ChatManagerCallback(
     private val onSuccessResult: () -> Unit,
     private val onFailureResult: (errorInfo: ErrorInfo?) -> Unit
 ) :

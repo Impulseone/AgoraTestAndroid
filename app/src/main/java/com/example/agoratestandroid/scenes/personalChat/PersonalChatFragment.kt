@@ -6,7 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
+import com.example.agoratestandroid.common.extensions.collectFlow
+import com.example.agoratestandroid.common.extensions.showSnackbar
 import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
+import com.example.agoratestandroid.models.LoadingResult
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PersonalChatFragment : Fragment(R.layout.scene_personal_chat) {
@@ -16,7 +19,23 @@ class PersonalChatFragment : Fragment(R.layout.scene_personal_chat) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindViewModel()
         bindSendMessageBtn()
+    }
+
+    private fun bindViewModel() {
+        collectFlow(viewModel.isSendMessageSuccessFlow) {
+            when (it) {
+                is LoadingResult.Loading -> {}
+                is LoadingResult.Success -> showSnackbar("send message success")
+                is LoadingResult.Failure -> {
+                    showSnackbar(it.throwable.message)
+                }
+                is LoadingResult.Empty -> {
+                    showSnackbar("login result is empty")
+                }
+            }
+        }
     }
 
     private fun bindSendMessageBtn() {

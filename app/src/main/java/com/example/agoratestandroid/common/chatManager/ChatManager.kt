@@ -2,9 +2,7 @@ package com.example.agoratestandroid.common.chatManager
 
 import android.content.Context
 import android.util.Log
-import com.example.agoratestandroid.BuildConfig
 import com.example.agoratestandroid.R
-import com.example.agoratestandroid.models.AuthResultCallback
 import io.agora.rtm.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -15,51 +13,23 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatManager(mContext: Context) {
     private val rtmClient: RtmClient
-    private val sendMessageOptions: SendMessageOptions
-    private val mListenerList: MutableList<RtmClientListener> = mutableListOf()
-    private val mMessagePool = RtmMessagePool()
 
     init {
         val appID = mContext.getString(R.string.app_id)
         try {
             rtmClient = RtmClient.createInstance(mContext, appID, object : RtmClientListener {
                 override fun onConnectionStateChanged(state: Int, reason: Int) {
-                    for (listener in mListenerList) {
-                        listener.onConnectionStateChanged(state, reason)
-                    }
                 }
 
                 override fun onMessageReceived(rtmMessage: RtmMessage, peerId: String) {
-                    if (mListenerList.isEmpty()) {
-                        // If currently there is no callback to handle this
-                        // message, this message is unread yet. Here we also
-                        // take it as an offline message.
-                        mMessagePool.insertOfflineMessage(rtmMessage, peerId)
-
-                        val text = """Message received from $peerId Message: ${rtmMessage.text}"""
-                        Log.e("ChatManager", text)
-
-                    } else {
-                        for (listener in mListenerList) {
-                            listener.onMessageReceived(rtmMessage, peerId)
-                        }
-                    }
+                    val text = "Message received from $peerId. Message: ${rtmMessage.text}"
+                    Log.e("ChatManager", text)
                 }
 
                 override fun onImageMessageReceivedFromPeer(
                     rtmImageMessage: RtmImageMessage,
                     peerId: String
                 ) {
-                    if (mListenerList.isEmpty()) {
-                        // If currently there is no callback to handle this
-                        // message, this message is unread yet. Here we also
-                        // take it as an offline message.
-                        mMessagePool.insertOfflineMessage(rtmImageMessage, peerId)
-                    } else {
-                        for (listener in mListenerList) {
-                            listener.onImageMessageReceivedFromPeer(rtmImageMessage, peerId)
-                        }
-                    }
                 }
 
                 override fun onFileMessageReceivedFromPeer(
@@ -83,48 +53,18 @@ class ChatManager(mContext: Context) {
                 override fun onTokenExpired() {}
                 override fun onPeersOnlineStatusChanged(status: Map<String, Int>) {}
             })
-            if (BuildConfig.DEBUG) {
-                rtmClient.setParameters("{\"rtm.log_filter\": 65535}")
-            }
         } catch (e: Exception) {
             Log.e(TAG, Log.getStackTraceString(e))
             throw RuntimeException(
-                """NEED TO check rtm sdk init fatal error ${Log.getStackTraceString(e)}""".trimIndent()
+                "NEED TO check rtm sdk init fatal error ${Log.getStackTraceString(e)}"
             )
         }
-
-        // Global option, mainly used to determine whether
-        // to support offline messages now.
-        sendMessageOptions = SendMessageOptions()
-    }
-
-    fun registerListener(listener: RtmClientListener) {
-        mListenerList.add(listener)
-    }
-
-    fun unregisterListener(listener: RtmClientListener) {
-        mListenerList.remove(listener)
-    }
-
-    fun enableOfflineMessage(enabled: Boolean) {
-        sendMessageOptions.enableOfflineMessaging = enabled
-    }
-
-    val isOfflineMessageEnabled: Boolean
-        get() = sendMessageOptions.enableOfflineMessaging
-
-    fun getAllOfflineMessages(peerId: String?): List<RtmMessage>? {
-        return mMessagePool.getAllOfflineMessages(peerId!!)
-    }
-
-    fun removeAllOfflineMessages(peerId: String?) {
-        mMessagePool.removeAllOfflineMessages(peerId!!)
     }
 
     fun login(username: String) =
         callbackFlow {
             trySend(LoadingResult.Loading)
-            val callback = AuthResultCallback({
+            val callback = ChatManagerCallback({
                 trySend(LoadingResult.Success(true))
             }, {
                 trySend(LoadingResult.Failure(Throwable(it?.errorDescription)))
@@ -139,7 +79,7 @@ class ChatManager(mContext: Context) {
 
     fun logout() = callbackFlow {
         trySend(LoadingResult.Loading)
-        val callback = AuthResultCallback({
+        val callback = ChatManagerCallback({
             trySend(LoadingResult.Success(true))
         }, {
             trySend(LoadingResult.Failure(Throwable(it?.errorDescription)))
@@ -148,25 +88,23 @@ class ChatManager(mContext: Context) {
         awaitClose {}
     }
 
-    fun sendPeerMessage(peerMessage: PeerMessage) {
+    fun sendPeerMessage(peerMessage: PeerMessage) = callbackFlow {
+        trySend(LoadingResult.Loading)
         val rtmMessage = rtmClient.createMessage()
         rtmMessage.text = peerMessage.text
+        val chatManagerCallback = ChatManagerCallback({
+            trySend(LoadingResult.Success(true))
+        }, {
+            trySend(LoadingResult.Failure(Throwable(it?.errorDescription)))
+        })
+
         rtmClient.sendMessageToPeer(
             peerMessage.toId,
             rtmMessage,
             SendMessageOptions(),
-            object : ResultCallback<Void?> {
-                override fun onSuccess(aVoid: Void?) {
-                    val text = "Message sent from ${peerMessage.fromId} To ${peerMessage.toId} ： ${peerMessage.text}"
-                    Log.e("ChatManager", text)
-                }
-
-                override fun onFailure(errorInfo: ErrorInfo) {
-                    val text =
-                        "Message fails to send from ${peerMessage.fromId} To ${peerMessage.toId} Error ： $errorInfo\n"
-                    Log.e("ChatManager", text)
-                }
-            })
+            chatManagerCallback
+        )
+        awaitClose {}
     }
 
     companion object {
