@@ -13,7 +13,7 @@
         android:layout_margin="50dp"
         android:background="@color/white"
         android:gravity="center"
-        android:hint="@string/uid"
+        android:hint="@string/scr_login_username"
         android:imeOptions="actionDone"
         android:importantForAutofill="no"
         android:inputType="text"
@@ -24,6 +24,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/username_error_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username_et" />
 
     <ProgressBar
         android:id="@+id/progressbar"
@@ -40,10 +49,9 @@
         android:id="@+id/login_bt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/login"
+        android:text="@string/scr_login_btn_login_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username_et" />
+        app:layout_constraintTop_toBottomOf="@+id/username_error_tv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

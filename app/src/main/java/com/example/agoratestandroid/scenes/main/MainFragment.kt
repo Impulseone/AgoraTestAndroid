@@ -11,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.extensions.collectFlow
-import com.example.agoratestandroid.common.extensions.showSnackbar
+import com.example.agoratestandroid.common.extensions.showToast
 import com.example.agoratestandroid.databinding.SceneMainBinding
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.scenes.login.LoginFragment
@@ -57,7 +57,7 @@ class MainFragment : Fragment(R.layout.scene_main) {
                 is LoadingResult.Success -> findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
                 is LoadingResult.Failure -> {
                     showLoading(false)
-                    showSnackbar(it.throwable.message)
+                    showToast(it.throwable.message)
                     Log.e(TAG, "${it.throwable.message}")
                 }
                 is LoadingResult.Empty -> {

@@ -12,6 +12,7 @@ import org.koin.core.logger.Level
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+        instance = this
         startKoin {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@App)
@@ -23,5 +24,8 @@ class App : Application() {
                 )
             )
         }
+    }
+    companion object {
+        lateinit var instance: App
     }
 }

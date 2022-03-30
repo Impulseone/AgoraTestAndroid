@@ -7,7 +7,7 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.extensions.collectFlow
-import com.example.agoratestandroid.common.extensions.showSnackbar
+import com.example.agoratestandroid.common.extensions.showToast
 import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.models.PeerItemMessage
@@ -41,10 +41,10 @@ class PersonalChatFragment : Fragment(R.layout.scene_personal_chat) {
                         )
                     )
                     is LoadingResult.Failure -> {
-                        showSnackbar(it.throwable.message)
+                        showToast(it.throwable.message)
                     }
                     is LoadingResult.Empty -> {
-                        showSnackbar("login result is empty")
+                        showToast("loading result is empty")
                     }
                 }
             }
@@ -57,7 +57,7 @@ class PersonalChatFragment : Fragment(R.layout.scene_personal_chat) {
                         )
                     )
                     is LoadingResult.Failure -> {
-                        showSnackbar(it.throwable.message)
+                        showToast(it.throwable.message)
                     }
                     else -> {}
                 }

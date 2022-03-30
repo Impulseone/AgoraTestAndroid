@@ -1,5 +1,6 @@
 package com.example.agoratestandroid.common.extensions
 
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +20,6 @@ fun <T> Fragment.collectFlow(flow: Flow<T>, function: (value: T) -> Unit) {
     }
 }
 
-fun Fragment.showSnackbar(text: String?) {
-    Snackbar.make(requireActivity(), requireView(), "$text", Snackbar.LENGTH_LONG).show()
+fun Fragment.showToast(text: String?) {
+    Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
 }

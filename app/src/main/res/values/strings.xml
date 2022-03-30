@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">AgoraMessenger</string>
-    <string name="uid">Имя пользователя</string>
-    <string name="friend_id">Имя друга</string>
-    <string name="chat">Чат</string>
-    <string name="input_message">Введите сообщение…</string>
-    <string name="send_message">Отправить</string>
 
-    <string name="login">Войти</string>
-    <string name="logout">Выйти</string>
+    <!--  LoginFragment  -->
+    <string name="scr_login_username">Имя пользователя</string>
+    <string name="scr_login_error_username">Имя пользователя не должно быть пустым</string>
+    <string name="scr_login_btn_login_name">Войти</string>
+
+    <!--  MainFragment  -->
+    <string name="scr_main_friend_id_label">Имя друга</string>
+    <string name="scr_main_chat_btn_name">Чат</string>
+    <string name="scr_main_logout_btn_name">Выйти</string>
+
+    <!--  ChatFragment  -->
+    <string name="scr_chat_input_message_label">Введите сообщение…</string>
+    <string name="scr_chat_send_message_btn">Отправить</string>
+
 </resources>

@@ -37,7 +37,7 @@
         android:layout_marginBottom="10dp"
         android:background="@color/white"
         android:gravity="center"
-        android:hint="@string/input_message"
+        android:hint="@string/scr_chat_input_message_label"
         android:imeOptions="actionDone"
         android:importantForAutofill="no"
         android:inputType="text"
@@ -52,7 +52,7 @@
         android:id="@+id/send_peer_msg_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/send_message"
+        android:text="@string/scr_chat_send_message_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/message_et" />

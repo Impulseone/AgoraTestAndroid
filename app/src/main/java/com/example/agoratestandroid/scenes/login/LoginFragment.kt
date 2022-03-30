@@ -1,64 +1,50 @@
 package com.example.agoratestandroid.scenes.login
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
-import com.example.agoratestandroid.common.extensions.collectFlow
-import com.example.agoratestandroid.common.extensions.showSnackbar
+import com.example.agoratestandroid.common.bind
+import com.example.agoratestandroid.common.bindAction
+import com.example.agoratestandroid.common.bindTextTwoWay
+import com.example.agoratestandroid.common.bindVisible
+import com.example.agoratestandroid.common.extensions.onDone
+import com.example.agoratestandroid.common.mvvm.BaseFragment
 import com.example.agoratestandroid.databinding.SceneLoginBinding
-import com.example.agoratestandroid.models.LoadingResult
+import com.example.agoratestandroid.scenes.navigation.Navigator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LoginFragment : Fragment(R.layout.scene_login) {
+class LoginFragment : BaseFragment<LoginViewModel>(R.layout.scene_login) {
 
     private val binding: SceneLoginBinding by viewBinding()
-    private val viewModel: LoginViewModel by viewModel()
+    override val viewModel: LoginViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViews()
         bindViewModel()
-        bindLoginButton()
     }
 
-    private fun bindViewModel() {
-        collectFlow(viewModel.isLoginSuccessFlow) {
-            when (it) {
-                is LoadingResult.Loading -> showLoading(true)
-                is LoadingResult.Success -> findNavController().navigate(R.id.action_loginFragment_to_mainFragment, bundleOf("userId" to binding.usernameEt.text.toString()))
-                is LoadingResult.Failure -> {
-                    showLoading(false)
-                    showSnackbar(it.throwable.message)
-                    Log.e(TAG, "${it.throwable.message}")
+    private fun initViews() {
+        with(viewModel) {
+            with(binding) {
+                usernameEt.onDone {
+                    onLoginClicked()
                 }
-                is LoadingResult.Empty -> {
-                    showLoading(false)
-                    Log.e(TAG, "login result is empty")
+                loginBt.setOnClickListener {
+                    onLoginClicked()
                 }
             }
         }
     }
 
-    private fun bindLoginButton() {
-        binding.loginBt.setOnClickListener {
-            viewModel.login(binding.usernameEt.text.toString())
-        }
-    }
-
-    private fun showLoading(isLoading: Boolean) {
+    override fun bindViewModel() {
         with(binding) {
-            progressbar.isVisible = isLoading
-            loginBt.isVisible = !isLoading
+            with(viewModel) {
+                bindTextTwoWay(username, usernameEt)
+                bind(usernameErrorText) { usernameErrorTv.text = it }
+                bindAction(launchMainScreen) { Navigator.goToMainScreen(this@LoginFragment) }
+            }
         }
     }
-
-    companion object {
-        private val TAG: String = LoginFragment::class.java.simpleName
-    }
-
 }
