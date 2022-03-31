@@ -5,19 +5,19 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.agoratestandroid.databinding.ItemMessageBinding
-import com.example.agoratestandroid.models.PeerItemMessage
+import com.example.agoratestandroid.models.PeerMessageItem
 
 class MessageViewHolder(private val binding: ItemMessageBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(peerItemMessage: PeerItemMessage) {
+    fun bind(peerMessageItem: PeerMessageItem) {
         with(binding) {
-            if (peerItemMessage.isSelf) {
+            if (peerMessageItem.isSelf) {
                 itemLayoutL.isVisible = false
-                itemMsgR.text = peerItemMessage.text
+                itemMsgR.text = peerMessageItem.text
             } else {
                 itemLayoutR.isVisible = false
-                itemMsgL.text = peerItemMessage.text
+                itemMsgL.text = peerMessageItem.text
             }
         }
     }

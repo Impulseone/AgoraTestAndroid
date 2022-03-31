@@ -6,6 +6,8 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.agoratestandroid.common.extensions.launchWhenStarted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,3 +39,12 @@ fun Fragment.bindVisible(stateFlow: Visible, view: View, asInvisible: Boolean = 
             view.isVisible = it.data
         }
     }.launchWhenStarted(viewLifecycleOwner, lifecycleScope)
+
+fun <T, TViewHolder : RecyclerView.ViewHolder?> Fragment.bindRecyclerViewAdapter(
+    stateFlow: DataList<T>,
+    adapter: ListAdapter<T, TViewHolder>,
+    block: (() -> Unit)? = null
+) = stateFlow.onEach {
+    adapter.submitList(it.data)
+    if (block != null) block()
+}.launchWhenStarted(viewLifecycleOwner, lifecycleScope)

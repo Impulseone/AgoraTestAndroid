@@ -1,10 +1,11 @@
 package com.example.agoratestandroid.scenes.main
 
+import androidx.lifecycle.viewModelScope
 import com.example.agoratestandroid.common.mvvm.BaseViewModel
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.models.State
 import com.example.agoratestandroid.services.interfaces.AuthService
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class MainViewModel(private val authService: AuthService) : BaseViewModel() {
@@ -16,9 +17,9 @@ class MainViewModel(private val authService: AuthService) : BaseViewModel() {
     private val logoutState = State()
 
     init {
-        logoutCommand.flatMapLatest {
+        logoutCommand.flatMapLatestNonNull {
             logout()
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun onLogoutClicked(){

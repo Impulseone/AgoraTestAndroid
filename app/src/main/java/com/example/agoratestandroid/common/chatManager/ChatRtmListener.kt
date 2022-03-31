@@ -1,20 +1,20 @@
 package com.example.agoratestandroid.common.chatManager
 
-import com.example.agoratestandroid.models.LoadingResult
 import io.agora.rtm.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-class ChatRtmListener: RtmClientListener {
+class ChatRtmListener : RtmClientListener {
 
-    private val textMessageFlow = MutableSharedFlow<LoadingResult<String>>(extraBufferCapacity = 1)
+    private val receivedMessageFlow =
+        MutableSharedFlow<String>(extraBufferCapacity = 1)
 
     override fun onConnectionStateChanged(p0: Int, p1: Int) {
 
     }
 
     override fun onMessageReceived(p0: RtmMessage?, p1: String?) {
-        textMessageFlow.tryEmit(LoadingResult.Success(p0!!.text))
+        receivedMessageFlow.tryEmit(p0!!.text)
     }
 
     override fun onImageMessageReceivedFromPeer(p0: RtmImageMessage?, p1: String?) {
@@ -41,5 +41,5 @@ class ChatRtmListener: RtmClientListener {
 
     }
 
-    fun textMessageFlow(): Flow<LoadingResult<String>> = textMessageFlow
+    fun receivedMessageFlow(): Flow<String> = receivedMessageFlow
 }
