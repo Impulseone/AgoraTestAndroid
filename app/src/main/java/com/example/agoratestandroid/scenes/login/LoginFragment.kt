@@ -43,6 +43,8 @@ class LoginFragment : BaseFragment<LoginViewModel>(R.layout.scene_login) {
             with(viewModel) {
                 bindTextTwoWay(username, usernameEt)
                 bind(usernameErrorText) { usernameErrorTv.text = it }
+                bindVisible(progressVisible, progressBar)
+                bindVisible(mainLayoutVisible, mainLayout)
                 bindAction(launchMainScreen) { Navigator.goToMainScreen(this@LoginFragment) }
             }
         }

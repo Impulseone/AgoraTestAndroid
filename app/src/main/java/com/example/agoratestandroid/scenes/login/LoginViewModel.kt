@@ -19,7 +19,7 @@ class LoginViewModel(private val authService: AuthService) : BaseViewModel() {
     val username = NullableText()
     val usernameErrorText = Text()
 
-    private val authorisationState = State()
+    private val authorizationState = State()
 
     init {
         username.onEach { username ->
@@ -31,13 +31,15 @@ class LoginViewModel(private val authService: AuthService) : BaseViewModel() {
             if (!username.value.isNullOrEmpty()) login()
             else emptyFlow()
         }.launchIn(viewModelScope)
+
+        successState(authorizationState)
     }
 
     private fun login(): Flow<LoadingResult<Boolean>> = authService.login(username.value!!).onEach { loginResult ->
         when (loginResult) {
             is LoadingResult.Success -> launchMainScreen.call()
-            is LoadingResult.Loading -> loadingState(authorisationState)
-            is LoadingResult.Failure -> failureState(loginResult.throwable, authorisationState)
+            is LoadingResult.Loading -> loadingState(authorizationState)
+            is LoadingResult.Failure -> failureState(loginResult.throwable, authorizationState)
             is LoadingResult.Empty -> {}
         }
     }.processThrowable()

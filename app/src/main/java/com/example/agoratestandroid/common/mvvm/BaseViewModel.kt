@@ -51,8 +51,8 @@ abstract class BaseViewModel : AndroidViewModel(App.instance) {
     private fun failureResult(msg: Throwable) {
         Log.d("Error", "failureResult: $msg")
         mainLayoutVisible.setValue(false)
-        errorVisible.setValue(true)
         progressVisible.setValue(false)
+        errorVisible.setValue(true)
     }
 
     protected fun <T> Flow<SingleEvent<T>>.flatMapLatestNonNull(block: (SingleEvent<T>) -> Flow<Any>) =
