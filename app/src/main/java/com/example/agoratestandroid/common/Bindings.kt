@@ -17,7 +17,7 @@ fun <T> Fragment.bindAction(stateFlow: StateFlow<SingleEvent<T?>>, block: (T) ->
     }.launchWhenStarted(viewLifecycleOwner, lifecycleScope)
 }
 
-fun Fragment.bindTextTwoWay(stateFlow: MutableStateFlow<String?>, editText: EditText) {
+fun bindTextTwoWay(stateFlow: MutableStateFlow<String?>, editText: EditText) {
     editText.doOnTextChanged { text, _, _, _ ->
         stateFlow.value = text.toString()
     }

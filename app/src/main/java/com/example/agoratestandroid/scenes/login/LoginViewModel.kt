@@ -6,7 +6,6 @@ import com.example.agoratestandroid.common.mvvm.BaseViewModel
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.models.State
 import com.example.agoratestandroid.services.interfaces.AuthService
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -35,7 +34,7 @@ class LoginViewModel(private val authService: AuthService) : BaseViewModel() {
         successState(authorizationState)
     }
 
-    private fun login(): Flow<LoadingResult<Boolean>> = authService.login(username.value!!).onEach { loginResult ->
+    private fun login() = authService.login(username.value!!).onEach { loginResult ->
         when (loginResult) {
             is LoadingResult.Success -> launchMainScreen.call()
             is LoadingResult.Loading -> loadingState(authorizationState)

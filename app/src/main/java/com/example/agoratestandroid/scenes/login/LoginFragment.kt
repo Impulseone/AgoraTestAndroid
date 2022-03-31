@@ -45,7 +45,7 @@ class LoginFragment : BaseFragment<LoginViewModel>(R.layout.scene_login) {
                 bind(usernameErrorText) { usernameErrorTv.text = it }
                 bindVisible(progressVisible, progressBar)
                 bindVisible(mainLayoutVisible, mainLayout)
-                bindAction(launchMainScreen) { Navigator.goToMainScreen(this@LoginFragment) }
+                bindAction(launchMainScreen) { Navigator.goToMainScreen(this@LoginFragment, usernameEt.text.toString()) }
             }
         }
     }
