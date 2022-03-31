@@ -45,7 +45,10 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
     override fun bindViewModel() {
         with(binding) {
             with(viewModel) {
-                bindRecyclerViewAdapter(messagesList, messagesAdapter)
+                bindRecyclerViewAdapter(messagesList, messagesAdapter) {
+                    messagesRv.scrollToPosition(messagesList.value.data.size - 1)
+                    if (messagesList.value.data.isNotEmpty() && messagesList.value.data.last().isSelf) messageEt.text.clear()
+                }
             }
         }
     }

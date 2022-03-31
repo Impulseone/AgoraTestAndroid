@@ -14,9 +14,11 @@ class MessageViewHolder(private val binding: ItemMessageBinding) :
         with(binding) {
             if (peerMessageItem.isSelf) {
                 itemLayoutL.isVisible = false
+                itemLayoutR.isVisible = true
                 itemMsgR.text = peerMessageItem.text
             } else {
                 itemLayoutR.isVisible = false
+                itemLayoutL.isVisible = true
                 itemMsgL.text = peerMessageItem.text
             }
         }
