@@ -27,6 +27,7 @@ class MainViewModel(private val authService: AuthService) : BaseViewModel() {
     }
 
     fun onChatClicked(){
+        viewModelScope
         launchChatScreen.call()
     }
 
