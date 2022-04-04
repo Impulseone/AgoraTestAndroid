@@ -21,7 +21,7 @@ class PersonalChatViewModel(private val chatService: ChatService) : BaseViewMode
 
     init {
         chatService.listenReceivedMessages(chatRtmListener)
-        chatRtmListener.receivedMessageFlow().onEach {
+        chatRtmListener.receivedMessageFlow.onEach {
             val updatedList =
                 messagesList.value.data.toMutableList().apply { add(PeerMessageItem(false, it)) }
             messagesList.setValue(updatedList)
