@@ -18,6 +18,7 @@ import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
 import com.example.agoratestandroid.scenes.personalChat.adapter.MessagesAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_personal_chat) {
@@ -33,6 +34,12 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
             if (isSuccess) {
                 viewModel.sendPhoto(navArgs.peerId, file!!.path)
             }
+        }
+
+    private val selectGalleryImageResult =
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
+            createFileFromGallery(it)
+            viewModel.sendPhoto(navArgs.peerId, file!!.path)
         }
 
     override val viewModel: PersonalChatViewModel by viewModel()
@@ -54,8 +61,11 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     val messageText = binding.messageEt.text.toString()
                     onClickSendPeerMsg(fromId, toId, messageText)
                 }
-                onClickListener(attachmentButton) {
-                    onClickSendAttachment()
+                onClickListener(photoButton) {
+                    onClickSendPhoto()
+                }
+                onClickListener(galleryButton) {
+                    onClickSendGalleryPhoto()
                 }
             }
         }
@@ -69,27 +79,48 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     messagesRv.scrollToPosition(messagesList.value.data.size - 1)
                     if (messagesList.value.data.isNotEmpty() && messagesList.value.data.last().isSelf) messageEt.text.clear()
                 }
-                bindAction(onClickAttachmentCommand) {
-                    dispatchTakePictureIntent()
+                bindAction(onClickTakePhotoCommand) {
+                    takePictureIntent()
+                }
+                bindAction(onClickTakeGalleryPhotoCommand) {
+                    selectGalleryImage()
                 }
             }
         }
     }
 
-    private fun dispatchTakePictureIntent() {
+    private fun selectGalleryImage() {
         lifecycleScope.launchWhenStarted {
-            getTmpFileUri().let { uri ->
+            selectGalleryImageResult.launch("image/*")
+        }
+    }
+
+    private fun takePictureIntent() {
+        lifecycleScope.launchWhenStarted {
+            createFileFromCamera().let { uri ->
                 takeImageResult.launch(uri)
             }
         }
     }
 
-    private fun getTmpFileUri(): Uri {
+    private fun createFileFromCamera(): Uri {
         file = File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
         return FileProvider.getUriForFile(
             requireContext(),
             "${BuildConfig.APPLICATION_ID}.provider",
             file!!
         )
+    }
+
+    private fun createFileFromGallery(uri: Uri) {
+        file = File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
+        val stream = requireContext().contentResolver.openInputStream(uri)
+        FileOutputStream(file, false).use { outputStream ->
+            var read: Int
+            val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
+            while (stream!!.read(bytes).also { read = it } != -1) {
+                outputStream.write(bytes, 0, read)
+            }
+        }
     }
 }

@@ -20,7 +20,8 @@ class PersonalChatViewModel(
     val messagesList = DataList<PeerMessageItem>()
 
     private val sendMessageState = State()
-    val onClickAttachmentCommand = Command()
+    val onClickTakePhotoCommand = Command()
+    val onClickTakeGalleryPhotoCommand = Command()
 
     private val chatRtmListener = ChatRtmListener()
 
@@ -80,8 +81,12 @@ class PersonalChatViewModel(
         }.processThrowable().launchIn(viewModelScope)
     }
 
-    fun onClickSendAttachment() {
-        onClickAttachmentCommand.call()
+    fun onClickSendPhoto() {
+        onClickTakePhotoCommand.call()
+    }
+
+    fun onClickSendGalleryPhoto() {
+        onClickTakeGalleryPhotoCommand.call()
     }
 
     override fun onCleared() {
