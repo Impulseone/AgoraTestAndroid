@@ -1,9 +1,7 @@
 package com.example.agoratestandroid.scenes.personalChat
 
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
@@ -20,7 +18,7 @@ import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
 import com.example.agoratestandroid.scenes.personalChat.adapter.MessagesAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
-
+import java.util.*
 
 class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_personal_chat) {
     private val binding: ScenePersonalChatBinding by viewBinding()
@@ -34,13 +32,8 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
         registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
             if (isSuccess) {
                 viewModel.sendPhoto(navArgs.peerId, file!!.path)
-//                latestTmpUri?.let { uri ->
-//                    uri.path?.let { viewModel.sendPhoto(navArgs.peerId, file!!.path) }
-//                }
             }
         }
-
-//    private var latestTmpUri: Uri? = null
 
     override val viewModel: PersonalChatViewModel by viewModel()
 
@@ -86,14 +79,13 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
     private fun dispatchTakePictureIntent() {
         lifecycleScope.launchWhenStarted {
             getTmpFileUri().let { uri ->
-//                latestTmpUri = uri
                 takeImageResult.launch(uri)
             }
         }
     }
 
     private fun getTmpFileUri(): Uri {
-        file = File(requireContext().filesDir, "picFromCamera.jpeg")
+        file = File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
         return FileProvider.getUriForFile(
             requireContext(),
             "${BuildConfig.APPLICATION_ID}.provider",

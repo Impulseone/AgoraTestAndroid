@@ -30,11 +30,15 @@ class AttachmentServiceImpl(
             object : ResultCallback<RtmImageMessage?> {
                 override fun onSuccess(rtmImageMessage: RtmImageMessage?) {
                     rtmImageMessage?.apply {
+                        val configuredImage = configImage(
+                            this,
+                            filePath
+                        )
                         rtmClientManager.rtmClient.sendMessageToPeer(
                             peerId,
-                            this,
+                            configuredImage,
                             SendMessageOptions(),
-                            sendMessageCallback(this@callbackFlow, rtmImageMessage, filePath)
+                            sendMessageCallback(this@callbackFlow, configuredImage)
                         )
                     }
                 }
@@ -49,16 +53,12 @@ class AttachmentServiceImpl(
     private fun sendMessageCallback(
         scope: ProducerScope<LoadingResult<RtmImageMessage>>,
         rtmImageMessage: RtmImageMessage,
-        filePath: String
     ): ResultCallback<Void?> {
         return object : ResultCallback<Void?> {
             override fun onSuccess(aVoid: Void?) {
                 scope.trySend(
                     LoadingResult.Success(
-                        configImage(
-                            rtmImageMessage,
-                            filePath
-                        )
+                        rtmImageMessage
                     )
                 )
             }

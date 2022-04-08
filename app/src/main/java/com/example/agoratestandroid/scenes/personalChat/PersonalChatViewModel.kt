@@ -1,7 +1,5 @@
 package com.example.agoratestandroid.scenes.personalChat
 
-import android.content.Intent
-import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.example.agoratestandroid.common.chatManager.ChatRtmListener
 import com.example.agoratestandroid.common.mvvm.BaseViewModel
@@ -27,12 +25,21 @@ class PersonalChatViewModel(
     private val chatRtmListener = ChatRtmListener()
 
     init {
-        chatService.listenReceivedMessages(chatRtmListener)
-        chatRtmListener.receivedMessageFlow.onEach {
-            val updatedList =
-                messagesList.value.data.toMutableList().apply { add(PeerMessageItem(false, it)) }
-            messagesList.setValue(updatedList)
-        }.processThrowable().launchIn(viewModelScope)
+        with(chatRtmListener) {
+            chatService.listenReceivedMessages(this)
+            receivedMessageFlow.onEach {
+                val updatedList =
+                    messagesList.value.data.toMutableList()
+                        .apply { add(PeerMessageItem(false, it)) }
+                messagesList.setValue(updatedList)
+            }.processThrowable().launchIn(viewModelScope)
+            receivedImageMessageFlow.onEach {
+                val updatedList =
+                    messagesList.value.data.toMutableList()
+                        .apply { add(PeerMessageItem(false, "", it)) }
+                messagesList.setValue(updatedList)
+            }.processThrowable().launchIn(viewModelScope)
+        }
     }
 
     fun onClickSendPeerMsg(fromId: String, toId: String, text: String) {
