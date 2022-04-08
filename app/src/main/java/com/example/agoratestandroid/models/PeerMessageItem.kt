@@ -1,3 +1,5 @@
 package com.example.agoratestandroid.models
 
-data class PeerMessageItem(val isSelf: Boolean, val text: String)
+import io.agora.rtm.RtmImageMessage
+
+data class PeerMessageItem(val isSelf: Boolean, val text: String, val rtmImageMessage: RtmImageMessage? = null)

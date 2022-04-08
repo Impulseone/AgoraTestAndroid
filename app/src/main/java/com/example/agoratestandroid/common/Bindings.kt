@@ -40,12 +40,16 @@ fun Fragment.bindVisible(stateFlow: Visible, view: View, asInvisible: Boolean = 
         }
     }.launchWhenStarted(viewLifecycleOwner, lifecycleScope)
 
+fun Fragment.onClickListener(view: View, block: () -> Unit) {
+    view.setOnClickListener { block() }
+}
+
 fun <T, TViewHolder : RecyclerView.ViewHolder?> Fragment.bindRecyclerViewAdapter(
     stateFlow: DataList<T>,
     adapter: ListAdapter<T, TViewHolder>,
     block: (() -> Unit)? = null
 ) = stateFlow.onEach {
-    adapter.submitList(it.data){
+    adapter.submitList(it.data) {
         if (block != null) block()
     }
 }.launchWhenStarted(viewLifecycleOwner, lifecycleScope)

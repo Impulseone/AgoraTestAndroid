@@ -7,6 +7,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.bindAction
 import com.example.agoratestandroid.common.mvvm.BaseFragment
+import com.example.agoratestandroid.common.onClickListener
 import com.example.agoratestandroid.databinding.SceneMainBinding
 import com.example.agoratestandroid.scenes.navigation.Navigator
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,12 +28,8 @@ class MainFragment : BaseFragment<MainViewModel>(R.layout.scene_main) {
     private fun initViews() {
         with(viewModel) {
             with(binding) {
-                logoutBtn.setOnClickListener {
-                    onLogoutClicked()
-                }
-                chatBtn.setOnClickListener {
-                    onChatClicked()
-                }
+                onClickListener(logoutBtn) { onLogoutClicked() }
+                onClickListener(chatBtn) { onChatClicked() }
             }
         }
     }
