@@ -38,8 +38,10 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
 
     private val selectGalleryImageResult =
         registerForActivityResult(ActivityResultContracts.GetContent()) {
-            createFileFromGallery(it)
-            viewModel.sendPhoto(navArgs.peerId, file!!.path)
+            if (it != null) {
+                createFileFromGallery(it)
+                viewModel.sendPhoto(navArgs.peerId, file!!.path)
+            }
         }
 
     override val viewModel: PersonalChatViewModel by viewModel()
@@ -56,10 +58,9 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                 friendId.text = navArgs.peerId
                 messagesRv.adapter = messagesAdapter
                 onClickListener(sendPeerMsgButton) {
-                    val fromId = navArgs.userId
-                    val toId = navArgs.peerId
-                    val messageText = binding.messageEt.text.toString()
-                    onClickSendPeerMsg(fromId, toId, messageText)
+                    with(messageEt.text.toString()) {
+                        if (isNotEmpty()) onClickSendPeerMsg(navArgs.userId, navArgs.peerId, this)
+                    }
                 }
                 onClickListener(photoButton) {
                     onClickSendPhoto()
@@ -77,7 +78,7 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
             with(viewModel) {
                 bindRecyclerViewAdapter(messagesList, messagesAdapter) {
                     messagesRv.scrollToPosition(messagesList.value.data.size - 1)
-                    if (messagesList.value.data.isNotEmpty() && messagesList.value.data.last().isSelf) messageEt.text.clear()
+                    messagesList.value.data.apply { if (isNotEmpty() && last().isSelf) messageEt.text.clear() }
                 }
                 bindAction(onClickTakePhotoCommand) {
                     takePictureIntent()
