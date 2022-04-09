@@ -13,9 +13,14 @@ class ChatRtmListener : RtmClientListener {
     private val _receivedImageMessageFlow =
         MutableSharedFlow<RtmImageMessage>(extraBufferCapacity = 1)
 
+    private val _receivedFileMessageFlow =
+        MutableSharedFlow<RtmFileMessage>(extraBufferCapacity = 1)
+
     val receivedMessageFlow: Flow<String> = _receivedMessageFlow.asSharedFlow()
 
     val receivedImageMessageFlow: Flow<RtmImageMessage> = _receivedImageMessageFlow.asSharedFlow()
+
+    val receivedFileMessageFlow: Flow<RtmFileMessage> = _receivedFileMessageFlow.asSharedFlow()
 
     override fun onConnectionStateChanged(p0: Int, p1: Int) {
 
@@ -31,7 +36,7 @@ class ChatRtmListener : RtmClientListener {
     }
 
     override fun onFileMessageReceivedFromPeer(p0: RtmFileMessage?, p1: String?) {
-
+        p0?.apply { _receivedFileMessageFlow.tryEmit(this) }
     }
 
     override fun onMediaUploadingProgress(p0: RtmMediaOperationProgress?, p1: Long) {

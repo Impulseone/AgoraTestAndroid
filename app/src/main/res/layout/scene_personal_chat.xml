@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="70dp"
-        android:layout_marginStart="85dp"
+        android:layout_marginStart="130dp"
         android:layout_marginBottom="10dp"
         android:background="@color/white"
         android:gravity="start"
@@ -78,6 +78,16 @@
         android:src="@drawable/ic_add_photo_alternate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/photo_button"
+        app:tint="@color/colorPrimary" />
+
+    <ImageView
+        android:id="@+id/file_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="13dp"
+        android:src="@drawable/ic_attach_file"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/gallery_button"
         app:tint="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

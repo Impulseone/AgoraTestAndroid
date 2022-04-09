@@ -3,6 +3,7 @@ package com.example.agoratestandroid.scenes.personalChat
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +21,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
+
 
 class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_personal_chat) {
     private val binding: ScenePersonalChatBinding by viewBinding()
@@ -41,6 +43,14 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
             if (it != null) {
                 createFileFromGallery(it)
                 viewModel.sendPhoto(navArgs.peerId, file!!.path)
+            }
+        }
+
+    private val selectFileResult =
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
+            if (it != null) {
+                createFileFromFilesDir(it)
+                viewModel.sendFile(navArgs.peerId, file!!)
             }
         }
 
@@ -68,6 +78,9 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                 onClickListener(galleryButton) {
                     onClickSendGalleryPhoto()
                 }
+                onClickListener(fileButton) {
+                    onClickSendFile()
+                }
             }
         }
     }
@@ -86,6 +99,9 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                 bindAction(onClickTakeGalleryPhotoCommand) {
                     selectGalleryImage()
                 }
+                bindAction(onClickSendFileCommand) {
+                    selectFileIntent()
+                }
             }
         }
     }
@@ -101,6 +117,12 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
             createFileFromCamera().let { uri ->
                 takeImageResult.launch(uri)
             }
+        }
+    }
+
+    private fun selectFileIntent() {
+        lifecycleScope.launchWhenStarted {
+            selectFileResult.launch("application/*")
         }
     }
 
@@ -124,4 +146,24 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
             }
         }
     }
+
+    private fun createFileFromFilesDir(uri: Uri) {
+        file = File(requireContext().filesDir, "${UUID.randomUUID()}.${getFileType(uri)}")
+        val stream = requireContext().contentResolver.openInputStream(uri)
+        FileOutputStream(file, false).use { outputStream ->
+            var read: Int
+            val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
+            while (stream!!.read(bytes).also { read = it } != -1) {
+                outputStream.write(bytes, 0, read)
+            }
+        }
+    }
+
+    private fun getFileType(uri: Uri): String {
+        val cR = requireContext().contentResolver
+        val mime = MimeTypeMap.getSingleton()
+        return mime.getExtensionFromMimeType(cR.getType(uri))!!
+    }
+
+
 }

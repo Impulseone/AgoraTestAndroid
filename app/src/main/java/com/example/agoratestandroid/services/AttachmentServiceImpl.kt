@@ -14,7 +14,9 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.concurrent.ExecutionException
+
 
 class AttachmentServiceImpl(
     private val context: Context,
@@ -24,22 +26,48 @@ class AttachmentServiceImpl(
         peerId: String,
         filePath: String
     ) = callbackFlow {
+        trySend(LoadingResult.Loading)
         rtmClientManager.rtmClient.createImageMessageByUploading(
             filePath,
             RtmRequestId(),
             object : ResultCallback<RtmImageMessage?> {
                 override fun onSuccess(rtmImageMessage: RtmImageMessage?) {
-                    rtmImageMessage?.apply {
-                        val configuredImage = configImage(
-                            this,
-                            filePath
-                        )
+                    sendRtmImageMessage(rtmImageMessage, this@callbackFlow, peerId, filePath)
+                }
+
+                override fun onFailure(errorInfo: ErrorInfo?) {
+                    trySend(LoadingResult.Failure(Throwable(errorInfo?.errorDescription)))
+                }
+            })
+        awaitClose()
+    }
+
+    override fun sendFileMessage(
+        peerId: String,
+        file: File
+    ): Flow<LoadingResult<RtmFileMessage>> = callbackFlow {
+        trySend(LoadingResult.Loading)
+        val requestId = RtmRequestId()
+        rtmClientManager.rtmClient.createFileMessageByUploading(
+            file.path,
+            requestId,
+            object : ResultCallback<RtmFileMessage?> {
+                override fun onSuccess(rtmFileMessage: RtmFileMessage?) {
+                    rtmFileMessage?.apply {
+                        thumbnail = file.readBytes()
                         rtmClientManager.rtmClient.sendMessageToPeer(
                             peerId,
-                            configuredImage,
+                            rtmFileMessage,
                             SendMessageOptions(),
-                            sendMessageCallback(this@callbackFlow, configuredImage)
-                        )
+                            object : ResultCallback<Void?> {
+                                override fun onSuccess(aVoid: Void?) {
+                                    trySend(LoadingResult.Success(rtmFileMessage))
+                                }
+
+                                override fun onFailure(errorInfo: ErrorInfo?) {
+                                    trySend(LoadingResult.Failure(Throwable(errorInfo?.errorDescription)))
+                                }
+                            })
                     }
                 }
 
@@ -48,6 +76,26 @@ class AttachmentServiceImpl(
                 }
             })
         awaitClose()
+    }
+
+    private fun sendRtmImageMessage(
+        rtmImageMessage: RtmImageMessage?,
+        scope: ProducerScope<LoadingResult<RtmImageMessage>>,
+        peerId: String,
+        filePath: String
+    ) {
+        rtmImageMessage?.apply {
+            val configuredImage = configImage(
+                this,
+                filePath
+            )
+            rtmClientManager.rtmClient.sendMessageToPeer(
+                peerId,
+                configuredImage,
+                SendMessageOptions(),
+                sendMessageCallback(scope, configuredImage)
+            )
+        }
     }
 
     private fun sendMessageCallback(
@@ -86,13 +134,14 @@ class AttachmentServiceImpl(
 
     private fun preloadImage(
         context: Context?,
-        file: String?,
+        filePath: String?,
         width: Int,
         height: Int
     ): ByteArray? {
         try {
             val bitmap =
-                Glide.with(context!!).asBitmap().encodeQuality(10).load(file).submit(width, height)
+                Glide.with(context!!).asBitmap().encodeQuality(50).load(filePath)
+                    .submit(width, height)
                     .get()
             return bitmapToByteArray(bitmap)
         } catch (e: ExecutionException) {
@@ -105,7 +154,7 @@ class AttachmentServiceImpl(
 
     private fun bitmapToByteArray(bitmap: Bitmap): ByteArray? {
         val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, baos)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
         return baos.toByteArray()
     }
 
