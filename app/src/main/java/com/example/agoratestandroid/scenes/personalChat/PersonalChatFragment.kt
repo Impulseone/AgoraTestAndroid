@@ -13,7 +13,7 @@ import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.bindRecyclerViewAdapter
 import com.example.agoratestandroid.common.mvvm.BaseFragment
 import com.example.agoratestandroid.common.onClickListener
-import com.example.agoratestandroid.common.utils.FileUtils
+import com.example.agoratestandroid.common.utils.FileUtil
 import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
 import com.example.agoratestandroid.scenes.personalChat.adapter.MessagesAdapter
 import org.koin.android.ext.android.inject
@@ -25,7 +25,7 @@ import java.util.*
 class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_personal_chat) {
     override val viewModel: PersonalChatViewModel by viewModel()
     private val binding: ScenePersonalChatBinding by viewBinding()
-    private val fileUtils: FileUtils by inject()
+    private val fileUtil: FileUtil by inject()
     private val navArgs by navArgs<PersonalChatFragmentArgs>()
 
     private val messagesAdapter = MessagesAdapter()
@@ -63,19 +63,19 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     if (isSuccess) {
                         sendPhoto(
                             navArgs.peerId,
-                            fileUtils.createFileFromUri(fileUri!!).path
+                            fileUtil.createFileFromUri(fileUri!!).path
                         )
                     }
                 }
             takeGalleryPhotoContract =
                 registerForActivityResult(ActivityResultContracts.GetContent()) {
                     if (it != null) {
-                        sendPhoto(navArgs.peerId, fileUtils.createFileFromUri(it).path)
+                        sendPhoto(navArgs.peerId, fileUtil.createFileFromUri(it).path)
                     }
                 }
             selectFileContract = registerForActivityResult(ActivityResultContracts.GetContent()) {
                 if (it != null) {
-                    sendFile(navArgs.peerId, fileUtils.createFileFromUri(it))
+                    sendFile(navArgs.peerId, fileUtil.createFileFromUri(it))
                 }
             }
         }

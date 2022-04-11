@@ -49,6 +49,7 @@ class AttachmentServiceImpl(
             requestId,
             object : ResultCallback<RtmFileMessage?> {
                 override fun onSuccess(rtmFileMessage: RtmFileMessage?) {
+                    rtmFileMessage!!.fileName = file.name
                     sendRtmFileMessage(rtmFileMessage, this@callbackFlow, peerId)
                 }
 
