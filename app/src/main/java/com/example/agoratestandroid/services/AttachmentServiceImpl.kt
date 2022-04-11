@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import java.io.File
 
+
 class AttachmentServiceImpl(
     private val rtmClientManager: RtmClientManager,
     private val imageUtils: ImageUtils
@@ -57,6 +58,29 @@ class AttachmentServiceImpl(
                     trySend(LoadingResult.Failure(Throwable(errorInfo?.errorDescription)))
                 }
             })
+        awaitClose()
+    }
+
+    override fun saveFileToStorage(
+        rtmFileMessage: RtmFileMessage,
+        filePath: String
+    ): Flow<LoadingResult<RtmFileMessage>> = callbackFlow {
+        trySend(LoadingResult.Loading)
+        val requestId = RtmRequestId()
+        rtmClientManager.rtmClient.downloadMediaToFile(
+            rtmFileMessage.mediaId,
+            filePath,
+            requestId,
+            object : ResultCallback<Void?> {
+                override fun onSuccess(aVoid: Void?) {
+                    trySend(LoadingResult.Success(rtmFileMessage))
+                }
+
+                override fun onFailure(errorInfo: ErrorInfo?) {
+                    trySend(LoadingResult.Failure(Throwable(errorInfo?.errorDescription)))
+                }
+            }
+        )
         awaitClose()
     }
 

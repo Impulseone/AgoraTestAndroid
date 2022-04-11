@@ -12,4 +12,6 @@ interface AttachmentService {
 
     fun sendFileMessage(peerId: String, file: File): Flow<LoadingResult<RtmFileMessage>>
 
+    fun saveFileToStorage(rtmFileMessage: RtmFileMessage, filePath: String): Flow<LoadingResult<RtmFileMessage>>
+
 }

@@ -1,6 +1,7 @@
 package com.example.agoratestandroid.scenes.personalChat
 
 import androidx.lifecycle.viewModelScope
+import com.example.agoratestandroid.common.Data
 import com.example.agoratestandroid.common.chatManager.ChatRtmListener
 import com.example.agoratestandroid.common.mvvm.BaseViewModel
 import com.example.agoratestandroid.models.LoadingResult
@@ -9,6 +10,7 @@ import com.example.agoratestandroid.models.PeerMessageItem
 import com.example.agoratestandroid.models.State
 import com.example.agoratestandroid.services.interfaces.AttachmentService
 import com.example.agoratestandroid.services.interfaces.ChatService
+import io.agora.rtm.RtmFileMessage
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.io.File
@@ -19,6 +21,7 @@ class PersonalChatViewModel(
 ) : BaseViewModel() {
 
     val messagesList = DataList<PeerMessageItem>()
+    val messageReceived = TCommand<RtmFileMessage>()
 
     private val sendMessageState = State()
 
@@ -43,10 +46,11 @@ class PersonalChatViewModel(
             }.processThrowable().launchIn(viewModelScope)
 
             receivedFileMessageFlow.onEach {
-                val updatedList =
-                    messagesList.value.data.toMutableList()
-                        .apply { add(PeerMessageItem(false, "", rtmFileMessage = it)) }
-                messagesList.setValue(updatedList)
+//                val updatedList =
+//                    messagesList.value.data.toMutableList()
+//                        .apply { add(PeerMessageItem(false, "", rtmFileMessage = it)) }
+//                messagesList.setValue(updatedList)
+                messageReceived.setValue(it)
             }.processThrowable().launchIn(viewModelScope)
         }
     }
@@ -98,6 +102,29 @@ class PersonalChatViewModel(
                             add(
                                 PeerMessageItem(
                                     isSelf = true,
+                                    text = "",
+                                    rtmFileMessage = it.data
+                                )
+                            )
+                        }
+                    messagesList.setValue(updatedList)
+                }
+                is LoadingResult.Loading -> loadingState(sendMessageState)
+                is LoadingResult.Failure -> failureState(it.throwable, sendMessageState)
+                is LoadingResult.Empty -> {}
+            }
+        }.processThrowable().launchIn(viewModelScope)
+    }
+
+    fun saveFileToStorage(rtmFileMessage: RtmFileMessage, filePath: String){
+        attachmentService.saveFileToStorage(rtmFileMessage, filePath).onEach {
+            when (it) {
+                is LoadingResult.Success -> {
+                    val updatedList = messagesList.value.data.toMutableList()
+                        .apply {
+                            add(
+                                PeerMessageItem(
+                                    isSelf = false,
                                     text = "",
                                     rtmFileMessage = it.data
                                 )

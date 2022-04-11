@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.webkit.MimeTypeMap
 import java.io.File
 import java.io.FileOutputStream
 
@@ -20,11 +19,6 @@ class FileUtil(private val context: Context) {
             }
         }
         return file
-    }
-
-    private fun getFileType(uri: Uri): String {
-        return MimeTypeMap.getSingleton()
-            .getExtensionFromMimeType(context.contentResolver.getType(uri))!!
     }
 }
 

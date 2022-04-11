@@ -2,6 +2,7 @@ package com.example.agoratestandroid.scenes.personalChat
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,10 +11,12 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.BuildConfig
 import com.example.agoratestandroid.R
+import com.example.agoratestandroid.common.bindAction
 import com.example.agoratestandroid.common.bindRecyclerViewAdapter
 import com.example.agoratestandroid.common.mvvm.BaseFragment
 import com.example.agoratestandroid.common.onClickListener
 import com.example.agoratestandroid.common.utils.FileUtil
+import com.example.agoratestandroid.common.utils.getFileName
 import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
 import com.example.agoratestandroid.scenes.personalChat.adapter.MessagesAdapter
 import org.koin.android.ext.android.inject
@@ -111,6 +114,9 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                 bindRecyclerViewAdapter(messagesList, messagesAdapter) {
                     messagesRv.scrollToPosition(messagesList.value.data.size - 1)
                     messagesList.value.data.apply { if (isNotEmpty() && last().isSelf) messageEt.text.clear() }
+                }
+                bindAction(messageReceived) {
+                    saveFileToStorage(it, File(requireContext().filesDir, it.fileName).path)
                 }
             }
         }
