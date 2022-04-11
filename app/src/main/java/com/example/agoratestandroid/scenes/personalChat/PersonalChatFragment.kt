@@ -3,58 +3,63 @@ package com.example.agoratestandroid.scenes.personalChat
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.webkit.MimeTypeMap
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.BuildConfig
 import com.example.agoratestandroid.R
-import com.example.agoratestandroid.common.bindAction
 import com.example.agoratestandroid.common.bindRecyclerViewAdapter
 import com.example.agoratestandroid.common.mvvm.BaseFragment
 import com.example.agoratestandroid.common.onClickListener
+import com.example.agoratestandroid.common.utils.FileUtils
 import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
 import com.example.agoratestandroid.scenes.personalChat.adapter.MessagesAdapter
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
-import java.io.FileOutputStream
 import java.util.*
 
 
 class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_personal_chat) {
+    override val viewModel: PersonalChatViewModel by viewModel()
     private val binding: ScenePersonalChatBinding by viewBinding()
+    private val fileUtils: FileUtils by inject()
     private val navArgs by navArgs<PersonalChatFragmentArgs>()
 
     private val messagesAdapter = MessagesAdapter()
 
-    var file: File? = null
+    private var takePhotoContract: ActivityResultLauncher<Uri>? = null
+    private var takeGalleryPhotoContract: ActivityResultLauncher<String>? = null
+    private var selectFileContract: ActivityResultLauncher<String>? = null
 
-    private val takeImageResult =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
-            if (isSuccess) {
-                viewModel.sendPhoto(navArgs.peerId, file!!.path)
+    private var fileUri: Uri? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fileUri = FileProvider.getUriForFile(
+            requireContext(),
+            "${BuildConfig.APPLICATION_ID}.provider",
+            File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
+        )
+        takePhotoContract =
+            registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
+                if (isSuccess) {
+                    viewModel.sendPhoto(navArgs.peerId, fileUtils.createFileFromUri(fileUri!!).path)
+                }
             }
-        }
-
-    private val selectGalleryImageResult =
-        registerForActivityResult(ActivityResultContracts.GetContent()) {
+        takeGalleryPhotoContract = registerForActivityResult(ActivityResultContracts.GetContent()) {
             if (it != null) {
-                createFileFromGallery(it)
-                viewModel.sendPhoto(navArgs.peerId, file!!.path)
+                viewModel.sendPhoto(navArgs.peerId, fileUtils.createFileFromUri(it).path)
             }
         }
-
-    private val selectFileResult =
-        registerForActivityResult(ActivityResultContracts.GetContent()) {
+        selectFileContract = registerForActivityResult(ActivityResultContracts.GetContent()) {
             if (it != null) {
-                createFileFromFilesDir(it)
-                viewModel.sendFile(navArgs.peerId, file!!)
+                viewModel.sendFile(navArgs.peerId, fileUtils.createFileFromUri(it))
             }
         }
-
-    override val viewModel: PersonalChatViewModel by viewModel()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,13 +78,13 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     }
                 }
                 onClickListener(photoButton) {
-                    onClickSendPhoto()
+                    takePhotoContract?.launch(fileUri!!)
                 }
                 onClickListener(galleryButton) {
-                    onClickSendGalleryPhoto()
+                    takeGalleryPhotoContract?.launch("image/*")
                 }
                 onClickListener(fileButton) {
-                    onClickSendFile()
+                    selectFileContract?.launch("application/*")
                 }
             }
         }
@@ -93,77 +98,7 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     messagesRv.scrollToPosition(messagesList.value.data.size - 1)
                     messagesList.value.data.apply { if (isNotEmpty() && last().isSelf) messageEt.text.clear() }
                 }
-                bindAction(onClickTakePhotoCommand) {
-                    takePictureIntent()
-                }
-                bindAction(onClickTakeGalleryPhotoCommand) {
-                    selectGalleryImage()
-                }
-                bindAction(onClickSendFileCommand) {
-                    selectFileIntent()
-                }
             }
         }
     }
-
-    private fun selectGalleryImage() {
-        lifecycleScope.launchWhenStarted {
-            selectGalleryImageResult.launch("image/*")
-        }
-    }
-
-    private fun takePictureIntent() {
-        lifecycleScope.launchWhenStarted {
-            createFileFromCamera().let { uri ->
-                takeImageResult.launch(uri)
-            }
-        }
-    }
-
-    private fun selectFileIntent() {
-        lifecycleScope.launchWhenStarted {
-            selectFileResult.launch("application/*")
-        }
-    }
-
-    private fun createFileFromCamera(): Uri {
-        file = File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
-        return FileProvider.getUriForFile(
-            requireContext(),
-            "${BuildConfig.APPLICATION_ID}.provider",
-            file!!
-        )
-    }
-
-    private fun createFileFromGallery(uri: Uri) {
-        file = File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
-        val stream = requireContext().contentResolver.openInputStream(uri)
-        FileOutputStream(file, false).use { outputStream ->
-            var read: Int
-            val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
-            while (stream!!.read(bytes).also { read = it } != -1) {
-                outputStream.write(bytes, 0, read)
-            }
-        }
-    }
-
-    private fun createFileFromFilesDir(uri: Uri) {
-        file = File(requireContext().filesDir, "${UUID.randomUUID()}.${getFileType(uri)}")
-        val stream = requireContext().contentResolver.openInputStream(uri)
-        FileOutputStream(file, false).use { outputStream ->
-            var read: Int
-            val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
-            while (stream!!.read(bytes).also { read = it } != -1) {
-                outputStream.write(bytes, 0, read)
-            }
-        }
-    }
-
-    private fun getFileType(uri: Uri): String {
-        val cR = requireContext().contentResolver
-        val mime = MimeTypeMap.getSingleton()
-        return mime.getExtensionFromMimeType(cR.getType(uri))!!
-    }
-
-
 }

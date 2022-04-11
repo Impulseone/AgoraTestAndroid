@@ -21,9 +21,6 @@ class PersonalChatViewModel(
     val messagesList = DataList<PeerMessageItem>()
 
     private val sendMessageState = State()
-    val onClickTakePhotoCommand = Command()
-    val onClickTakeGalleryPhotoCommand = Command()
-    val onClickSendFileCommand = Command()
 
     private val chatRtmListener = ChatRtmListener()
 
@@ -113,18 +110,6 @@ class PersonalChatViewModel(
                 is LoadingResult.Empty -> {}
             }
         }.processThrowable().launchIn(viewModelScope)
-    }
-
-    fun onClickSendPhoto() {
-        onClickTakePhotoCommand.call()
-    }
-
-    fun onClickSendGalleryPhoto() {
-        onClickTakeGalleryPhotoCommand.call()
-    }
-
-    fun onClickSendFile() {
-        onClickSendFileCommand.call()
     }
 
     override fun onCleared() {
