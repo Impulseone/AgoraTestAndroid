@@ -5,6 +5,7 @@ import android.view.View
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.*
+import com.example.agoratestandroid.common.extensions.hideKeyboard
 import com.example.agoratestandroid.common.extensions.onDone
 import com.example.agoratestandroid.common.mvvm.BaseFragment
 import com.example.agoratestandroid.databinding.SceneLoginBinding
@@ -26,6 +27,7 @@ class LoginFragment : BaseFragment<LoginViewModel>(R.layout.scene_login) {
         with(viewModel) {
             with(binding) {
                 usernameEt.onDone {
+                    hideKeyboard()
                     onLoginClicked()
                 }
                 onClickListener(loginBt) { onLoginClicked() }

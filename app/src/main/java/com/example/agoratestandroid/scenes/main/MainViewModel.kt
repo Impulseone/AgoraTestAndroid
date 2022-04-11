@@ -1,6 +1,7 @@
 package com.example.agoratestandroid.scenes.main
 
 import androidx.lifecycle.viewModelScope
+import com.example.agoratestandroid.R
 import com.example.agoratestandroid.common.mvvm.BaseViewModel
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.models.State
@@ -16,9 +17,16 @@ class MainViewModel(private val authService: AuthService) : BaseViewModel() {
     private val logoutCommand = Command()
     private val logoutState = State()
 
+    val friendName = NullableText()
+    val errorText = Text()
+
     init {
         logoutCommand.flatMapLatestNonNull {
             logout()
+        }.launchIn(viewModelScope)
+        friendName.onEach { friendName ->
+            if (!friendName.isNullOrEmpty()) errorText.setValue("")
+            else errorText.setValue(getString(R.string.scr_login_error_username))
         }.launchIn(viewModelScope)
     }
 
@@ -27,7 +35,6 @@ class MainViewModel(private val authService: AuthService) : BaseViewModel() {
     }
 
     fun onChatClicked(){
-        viewModelScope
         launchChatScreen.call()
     }
 
