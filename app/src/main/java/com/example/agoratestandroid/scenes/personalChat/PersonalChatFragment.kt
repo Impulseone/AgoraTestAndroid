@@ -38,33 +38,47 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fileUri = FileProvider.getUriForFile(
-            requireContext(),
-            "${BuildConfig.APPLICATION_ID}.provider",
-            File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
-        )
-        takePhotoContract =
-            registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
-                if (isSuccess) {
-                    viewModel.sendPhoto(navArgs.peerId, fileUtils.createFileFromUri(fileUri!!).path)
-                }
-            }
-        takeGalleryPhotoContract = registerForActivityResult(ActivityResultContracts.GetContent()) {
-            if (it != null) {
-                viewModel.sendPhoto(navArgs.peerId, fileUtils.createFileFromUri(it).path)
-            }
-        }
-        selectFileContract = registerForActivityResult(ActivityResultContracts.GetContent()) {
-            if (it != null) {
-                viewModel.sendFile(navArgs.peerId, fileUtils.createFileFromUri(it))
-            }
-        }
+        initFileUri()
+        initContracts()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         bindViewModel()
+    }
+
+    private fun initFileUri() {
+        fileUri = FileProvider.getUriForFile(
+            requireContext(),
+            "${BuildConfig.APPLICATION_ID}.provider",
+            File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
+        )
+    }
+
+    private fun initContracts() {
+        with(viewModel) {
+            takePhotoContract =
+                registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
+                    if (isSuccess) {
+                        sendPhoto(
+                            navArgs.peerId,
+                            fileUtils.createFileFromUri(fileUri!!).path
+                        )
+                    }
+                }
+            takeGalleryPhotoContract =
+                registerForActivityResult(ActivityResultContracts.GetContent()) {
+                    if (it != null) {
+                        sendPhoto(navArgs.peerId, fileUtils.createFileFromUri(it).path)
+                    }
+                }
+            selectFileContract = registerForActivityResult(ActivityResultContracts.GetContent()) {
+                if (it != null) {
+                    sendFile(navArgs.peerId, fileUtils.createFileFromUri(it))
+                }
+            }
+        }
     }
 
     private fun initViews() {
@@ -74,7 +88,7 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                 messagesRv.adapter = messagesAdapter
                 onClickListener(sendPeerMsgButton) {
                     with(messageEt.text.toString()) {
-                        if (isNotEmpty()) onClickSendPeerMsg(navArgs.userId, navArgs.peerId, this)
+                        if (isNotEmpty()) sendPeerMessage(navArgs.userId, navArgs.peerId, this)
                     }
                 }
                 onClickListener(photoButton) {

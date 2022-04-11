@@ -51,7 +51,7 @@ class PersonalChatViewModel(
         }
     }
 
-    fun onClickSendPeerMsg(fromId: String, toId: String, text: String) {
+    fun sendPeerMessage(fromId: String, toId: String, text: String) {
         chatService.sendPeerMessage(PeerMessage(fromId, toId, text)).onEach {
             when (it) {
                 is LoadingResult.Success -> {
