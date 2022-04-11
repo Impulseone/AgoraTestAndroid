@@ -12,5 +12,5 @@ import org.koin.dsl.module
 val servicesModule = module {
     single<AuthService> { AuthServiceImpl(get()) }
     single<ChatService> { ChatServiceImpl(get()) }
-    single<AttachmentService> { AttachmentServiceImpl(androidContext(), get()) }
+    single<AttachmentService> { AttachmentServiceImpl(get(), get()) }
 }
