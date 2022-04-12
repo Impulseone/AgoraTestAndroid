@@ -2,7 +2,6 @@ package com.example.agoratestandroid.scenes.personalChat
 
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,14 +15,12 @@ import com.example.agoratestandroid.common.bindRecyclerViewAdapter
 import com.example.agoratestandroid.common.mvvm.BaseFragment
 import com.example.agoratestandroid.common.onClickListener
 import com.example.agoratestandroid.common.utils.FileUtil
-import com.example.agoratestandroid.common.utils.getFileName
 import com.example.agoratestandroid.databinding.ScenePersonalChatBinding
 import com.example.agoratestandroid.scenes.personalChat.adapter.MessagesAdapter
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.util.*
-
 
 class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_personal_chat) {
     override val viewModel: PersonalChatViewModel by viewModel()
@@ -37,11 +34,12 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
     private var takeGalleryPhotoContract: ActivityResultLauncher<String>? = null
     private var selectFileContract: ActivityResultLauncher<String>? = null
 
-    private var fileUri: Uri? = null
+    private var photo: File? = null
+    private var photoUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initFileUri()
+        initPhotoUri()
         initContracts()
     }
 
@@ -51,12 +49,12 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
         bindViewModel()
     }
 
-    private fun initFileUri() {
-        fileUri = FileProvider.getUriForFile(
+    private fun initPhotoUri() {
+        photo = File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
+        photoUri = FileProvider.getUriForFile(
             requireContext(),
             "${BuildConfig.APPLICATION_ID}.provider",
-            File(requireContext().filesDir, "${UUID.randomUUID()}.jpeg")
-        )
+            photo!!)
     }
 
     private fun initContracts() {
@@ -66,14 +64,14 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     if (isSuccess) {
                         sendPhoto(
                             navArgs.peerId,
-                            fileUtil.createFileFromUri(fileUri!!).path
+                            photo!!
                         )
                     }
                 }
             takeGalleryPhotoContract =
                 registerForActivityResult(ActivityResultContracts.GetContent()) {
                     if (it != null) {
-                        sendPhoto(navArgs.peerId, fileUtil.createFileFromUri(it).path)
+                        sendPhoto(navArgs.peerId, fileUtil.createFileFromUri(it))
                     }
                 }
             selectFileContract = registerForActivityResult(ActivityResultContracts.GetContent()) {
@@ -95,7 +93,7 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     }
                 }
                 onClickListener(photoButton) {
-                    takePhotoContract?.launch(fileUri!!)
+                    takePhotoContract?.launch(photoUri!!)
                 }
                 onClickListener(galleryButton) {
                     takeGalleryPhotoContract?.launch("image/*")
@@ -115,8 +113,11 @@ class PersonalChatFragment : BaseFragment<PersonalChatViewModel>(R.layout.scene_
                     messagesRv.scrollToPosition(messagesList.value.data.size - 1)
                     messagesList.value.data.apply { if (isNotEmpty() && last().isSelf) messageEt.text.clear() }
                 }
-                bindAction(messageReceived) {
-                    saveFileToStorage(it, File(requireContext().filesDir, it.fileName).path)
+                bindAction(fileMessageReceived) {
+                    saveFileToStorage(it.mediaId, File(requireContext().filesDir, it.fileName))
+                }
+                bindAction(imageMessageReceived) {
+                    saveFileToStorage(it.mediaId, File(requireContext().filesDir, it.fileName))
                 }
             }
         }

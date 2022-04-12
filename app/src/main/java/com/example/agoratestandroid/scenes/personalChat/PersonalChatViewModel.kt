@@ -1,7 +1,6 @@
 package com.example.agoratestandroid.scenes.personalChat
 
 import androidx.lifecycle.viewModelScope
-import com.example.agoratestandroid.common.Data
 import com.example.agoratestandroid.common.chatManager.ChatRtmListener
 import com.example.agoratestandroid.common.mvvm.BaseViewModel
 import com.example.agoratestandroid.models.LoadingResult
@@ -11,6 +10,7 @@ import com.example.agoratestandroid.models.State
 import com.example.agoratestandroid.services.interfaces.AttachmentService
 import com.example.agoratestandroid.services.interfaces.ChatService
 import io.agora.rtm.RtmFileMessage
+import io.agora.rtm.RtmImageMessage
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.io.File
@@ -21,7 +21,8 @@ class PersonalChatViewModel(
 ) : BaseViewModel() {
 
     val messagesList = DataList<PeerMessageItem>()
-    val messageReceived = TCommand<RtmFileMessage>()
+    val fileMessageReceived = TCommand<RtmFileMessage>()
+    val imageMessageReceived = TCommand<RtmImageMessage>()
 
     private val sendMessageState = State()
 
@@ -29,7 +30,6 @@ class PersonalChatViewModel(
 
     init {
         with(chatRtmListener) {
-
             chatService.listenReceivedMessages(this)
             receivedMessageFlow.onEach {
                 val updatedList =
@@ -39,18 +39,11 @@ class PersonalChatViewModel(
             }.processThrowable().launchIn(viewModelScope)
 
             receivedImageMessageFlow.onEach {
-                val updatedList =
-                    messagesList.value.data.toMutableList()
-                        .apply { add(PeerMessageItem(false, "", it)) }
-                messagesList.setValue(updatedList)
+                imageMessageReceived.setValue(it)
             }.processThrowable().launchIn(viewModelScope)
 
             receivedFileMessageFlow.onEach {
-//                val updatedList =
-//                    messagesList.value.data.toMutableList()
-//                        .apply { add(PeerMessageItem(false, "", rtmFileMessage = it)) }
-//                messagesList.setValue(updatedList)
-                messageReceived.setValue(it)
+                fileMessageReceived.setValue(it)
             }.processThrowable().launchIn(viewModelScope)
         }
     }
@@ -70,8 +63,8 @@ class PersonalChatViewModel(
         }.processThrowable().launchIn(viewModelScope)
     }
 
-    fun sendPhoto(peerId: String, filePath: String) {
-        attachmentService.sendImageMessage(peerId, filePath).onEach {
+    fun sendPhoto(peerId: String, file: File) {
+        attachmentService.sendImageMessage(peerId, file).onEach {
             when (it) {
                 is LoadingResult.Success -> {
                     val updatedList = messagesList.value.data.toMutableList()
@@ -80,7 +73,7 @@ class PersonalChatViewModel(
                                 PeerMessageItem(
                                     isSelf = true,
                                     text = "",
-                                    rtmImageMessage = it.data
+                                    file = file
                                 )
                             )
                         }
@@ -103,7 +96,7 @@ class PersonalChatViewModel(
                                 PeerMessageItem(
                                     isSelf = true,
                                     text = "",
-                                    rtmFileMessage = it.data
+                                    file = file
                                 )
                             )
                         }
@@ -116,8 +109,8 @@ class PersonalChatViewModel(
         }.processThrowable().launchIn(viewModelScope)
     }
 
-    fun saveFileToStorage(rtmFileMessage: RtmFileMessage, filePath: String){
-        attachmentService.saveFileToStorage(rtmFileMessage, filePath).onEach {
+    fun saveFileToStorage(mediaId: String, file: File) {
+        attachmentService.saveMediaToStorage(mediaId, file.path).onEach {
             when (it) {
                 is LoadingResult.Success -> {
                     val updatedList = messagesList.value.data.toMutableList()
@@ -126,7 +119,7 @@ class PersonalChatViewModel(
                                 PeerMessageItem(
                                     isSelf = false,
                                     text = "",
-                                    rtmFileMessage = it.data
+                                    file = file
                                 )
                             )
                         }

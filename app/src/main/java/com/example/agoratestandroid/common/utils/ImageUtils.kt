@@ -5,21 +5,25 @@ import android.graphics.Bitmap
 import com.bumptech.glide.Glide
 import io.agora.rtm.RtmImageMessage
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.concurrent.ExecutionException
 
 class ImageUtils(private val context: Context) {
 
-    fun configImage(rtmImageMessage: RtmImageMessage, filePath: String): RtmImageMessage {
+    fun configImage(rtmImageMessage: RtmImageMessage, file: File): RtmImageMessage {
         val width = rtmImageMessage.width / 5
         val height = rtmImageMessage.width / 5
-        rtmImageMessage.thumbnail =
-            preloadImage(
-                filePath,
-                width,
-                height
-            )
-        rtmImageMessage.thumbnailWidth = width
-        rtmImageMessage.thumbnailHeight = height
+        with(rtmImageMessage) {
+            thumbnail =
+                preloadImage(
+                    file.path,
+                    width,
+                    height
+                )
+            thumbnailWidth = width
+            thumbnailHeight = height
+            fileName = file.name
+        }
         return rtmImageMessage
     }
 

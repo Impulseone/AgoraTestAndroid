@@ -2,6 +2,7 @@
 
 package com.example.agoratestandroid.services
 
+import android.util.Log
 import com.example.agoratestandroid.common.chatManager.RtmClientManager
 import com.example.agoratestandroid.common.utils.ImageUtils
 import com.example.agoratestandroid.models.LoadingResult
@@ -21,15 +22,15 @@ class AttachmentServiceImpl(
 
     override fun sendImageMessage(
         peerId: String,
-        filePath: String
+        file: File
     ) = callbackFlow {
         trySend(LoadingResult.Loading)
         rtmClientManager.rtmClient.createImageMessageByUploading(
-            filePath,
+            file.path,
             RtmRequestId(),
             object : ResultCallback<RtmImageMessage?> {
                 override fun onSuccess(rtmImageMessage: RtmImageMessage?) {
-                    sendRtmImageMessage(rtmImageMessage, this@callbackFlow, peerId, filePath)
+                    sendRtmImageMessage(rtmImageMessage, this@callbackFlow, peerId, file)
                 }
 
                 override fun onFailure(errorInfo: ErrorInfo?) {
@@ -61,19 +62,19 @@ class AttachmentServiceImpl(
         awaitClose()
     }
 
-    override fun saveFileToStorage(
-        rtmFileMessage: RtmFileMessage,
+    override fun saveMediaToStorage(
+        mediaId: String,
         filePath: String
-    ): Flow<LoadingResult<RtmFileMessage>> = callbackFlow {
+    ): Flow<LoadingResult<Unit>> = callbackFlow {
         trySend(LoadingResult.Loading)
         val requestId = RtmRequestId()
         rtmClientManager.rtmClient.downloadMediaToFile(
-            rtmFileMessage.mediaId,
+            mediaId,
             filePath,
             requestId,
             object : ResultCallback<Void?> {
                 override fun onSuccess(aVoid: Void?) {
-                    trySend(LoadingResult.Success(rtmFileMessage))
+                    trySend(LoadingResult.Success(Unit))
                 }
 
                 override fun onFailure(errorInfo: ErrorInfo?) {
@@ -88,12 +89,12 @@ class AttachmentServiceImpl(
         rtmImageMessage: RtmImageMessage?,
         scope: ProducerScope<LoadingResult<RtmImageMessage>>,
         peerId: String,
-        filePath: String
+        file: File
     ) {
         rtmImageMessage?.apply {
             val configuredImage = imageUtils.configImage(
                 this,
-                filePath
+                file
             )
             rtmClientManager.rtmClient.sendMessageToPeer(
                 peerId,

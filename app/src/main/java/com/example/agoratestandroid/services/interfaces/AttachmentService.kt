@@ -8,10 +8,10 @@ import java.io.File
 
 interface AttachmentService {
 
-    fun sendImageMessage(peerId: String, filePath: String): Flow<LoadingResult<RtmImageMessage>>
+    fun sendImageMessage(peerId: String, file: File): Flow<LoadingResult<RtmImageMessage>>
 
     fun sendFileMessage(peerId: String, file: File): Flow<LoadingResult<RtmFileMessage>>
 
-    fun saveFileToStorage(rtmFileMessage: RtmFileMessage, filePath: String): Flow<LoadingResult<RtmFileMessage>>
+    fun saveMediaToStorage(mediaId: String, filePath: String): Flow<LoadingResult<Unit>>
 
 }

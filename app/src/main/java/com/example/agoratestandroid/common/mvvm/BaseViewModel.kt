@@ -120,7 +120,7 @@ abstract class BaseViewModel : AndroidViewModel(App.instance) {
     }
 
     protected fun <T> Flow<T>.processThrowable() = this.catch {
-        Log.d("Error", "processThrowable: $it")
+        Log.e("Error", "processThrowable: $it")
         failureResult(it.fillInStackTrace())
     }
 }

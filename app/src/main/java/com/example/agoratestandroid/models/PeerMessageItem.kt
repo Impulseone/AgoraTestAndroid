@@ -1,11 +1,9 @@
 package com.example.agoratestandroid.models
 
-import io.agora.rtm.RtmFileMessage
-import io.agora.rtm.RtmImageMessage
+import java.io.File
 
 data class PeerMessageItem(
     val isSelf: Boolean,
     val text: String,
-    val rtmImageMessage: RtmImageMessage? = null,
-    val rtmFileMessage: RtmFileMessage? = null
+    val file: File? = null
 )
