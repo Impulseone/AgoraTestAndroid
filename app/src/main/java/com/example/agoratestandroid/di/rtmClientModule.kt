@@ -5,5 +5,5 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val rtmClientModule = module {
-    single {RtmClientManager(androidContext())}
+    single(createdAtStart = true) { RtmClientManager(androidContext()) }
 }

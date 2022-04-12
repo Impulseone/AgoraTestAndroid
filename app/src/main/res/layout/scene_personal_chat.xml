@@ -34,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="70dp"
+        android:layout_marginStart="130dp"
         android:layout_marginBottom="10dp"
         android:background="@color/white"
         android:gravity="start"
@@ -50,23 +51,43 @@
 
     <ImageView
         android:id="@+id/send_peer_msg_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_margin="7dp"
-        android:src="@drawable/arrow_circle_up"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="11dp"
+        android:src="@drawable/ic_send"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/message_et"
         app:tint="@color/colorPrimary" />
 
-<!--    <Button-->
-<!--        android:id="@+id/send_peer_msg_button"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="5dp"-->
-<!--        android:text="@string/scr_chat_send_message_btn"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/message_et" />-->
+    <ImageView
+        android:id="@+id/photo_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_photo_camera"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/colorPrimary" />
+
+    <ImageView
+        android:id="@+id/gallery_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/ic_add_photo_alternate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/photo_button"
+        app:tint="@color/colorPrimary" />
+
+    <ImageView
+        android:id="@+id/file_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="13dp"
+        android:src="@drawable/ic_attach_file"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/gallery_button"
+        app:tint="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

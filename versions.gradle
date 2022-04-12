@@ -26,4 +26,7 @@ ext {
 
     //lifecycle
     lifecycle = "2.4.1"
+
+    //Glide
+    glide = "4.12.0"
 }

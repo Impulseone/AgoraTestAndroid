@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.view.View
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.agoratestandroid.R
-import com.example.agoratestandroid.common.bind
-import com.example.agoratestandroid.common.bindAction
-import com.example.agoratestandroid.common.bindTextTwoWay
-import com.example.agoratestandroid.common.bindVisible
+import com.example.agoratestandroid.common.*
+import com.example.agoratestandroid.common.extensions.hideKeyboard
 import com.example.agoratestandroid.common.extensions.onDone
 import com.example.agoratestandroid.common.mvvm.BaseFragment
 import com.example.agoratestandroid.databinding.SceneLoginBinding
@@ -29,11 +27,10 @@ class LoginFragment : BaseFragment<LoginViewModel>(R.layout.scene_login) {
         with(viewModel) {
             with(binding) {
                 usernameEt.onDone {
+                    hideKeyboard()
                     onLoginClicked()
                 }
-                loginBt.setOnClickListener {
-                    onLoginClicked()
-                }
+                onClickListener(loginBt) { onLoginClicked() }
             }
         }
     }
@@ -45,7 +42,12 @@ class LoginFragment : BaseFragment<LoginViewModel>(R.layout.scene_login) {
                 bind(usernameErrorText) { usernameErrorTv.text = it }
                 bindVisible(progressVisible, progressBar)
                 bindVisible(mainLayoutVisible, mainLayout)
-                bindAction(launchMainScreen) { Navigator.goToMainScreen(this@LoginFragment, usernameEt.text.toString()) }
+                bindAction(launchMainScreen) {
+                    Navigator.goToMainScreen(
+                        this@LoginFragment,
+                        usernameEt.text.toString()
+                    )
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ package com.example.agoratestandroid
 import android.app.Application
 import com.example.agoratestandroid.di.rtmClientModule
 import com.example.agoratestandroid.di.servicesModule
+import com.example.agoratestandroid.di.utilsModule
 import com.example.agoratestandroid.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -20,7 +21,8 @@ class App : Application() {
                 listOf(
                     rtmClientModule,
                     viewModelModule,
-                    servicesModule
+                    servicesModule,
+                    utilsModule
                 )
             )
         }

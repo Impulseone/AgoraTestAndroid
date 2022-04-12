@@ -1,3 +1,9 @@
 package com.example.agoratestandroid.models
 
-data class PeerMessageItem(val isSelf: Boolean, val text: String)
+import java.io.File
+
+data class PeerMessageItem(
+    val isSelf: Boolean,
+    val text: String,
+    val file: File? = null
+)

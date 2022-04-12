@@ -12,7 +12,7 @@
     <string name="scr_main_logout_btn_name">Выйти</string>
 
     <!--  ChatFragment  -->
-    <string name="scr_chat_input_message_label">Введите сообщение…</string>
+    <string name="scr_chat_input_message_label">Сообщение…</string>
     <string name="scr_chat_send_message_btn">Отправить</string>
 
 </resources>
