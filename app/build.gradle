@@ -25,10 +25,10 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField "String", "APP_ID", "\"47f38cba6b0e41828c054c04d4b781ca\""
+            buildConfigField "String", "APP_ID", "\"ed14831974584c1cad3658d9b3f6d93a\""
         }
         release {
-            buildConfigField "String", "APP_ID", "\"47f38cba6b0e41828c054c04d4b781ca\""
+            buildConfigField "String", "APP_ID", "\"ed14831974584c1cad3658d9b3f6d93a\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
