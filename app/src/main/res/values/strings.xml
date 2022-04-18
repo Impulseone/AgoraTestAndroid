@@ -14,5 +14,6 @@
     <!--  ChatFragment  -->
     <string name="scr_chat_input_message_label">Сообщение…</string>
     <string name="scr_chat_send_message_btn">Отправить</string>
+    <string name="scr_chat_send_friendId_tv">FriendId</string>
 
 </resources>

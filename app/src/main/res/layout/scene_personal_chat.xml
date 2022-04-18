@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="FriendId"
+        android:text="@string/scr_chat_send_friendId_tv"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/message_et"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/photo_button"
@@ -68,7 +69,8 @@
         android:src="@drawable/ic_photo_camera"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/gallery_button"
@@ -78,7 +80,8 @@
         android:src="@drawable/ic_add_photo_alternate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/photo_button"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/file_button"
@@ -88,6 +91,7 @@
         android:src="@drawable/ic_attach_file"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/gallery_button"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/colorPrimary"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

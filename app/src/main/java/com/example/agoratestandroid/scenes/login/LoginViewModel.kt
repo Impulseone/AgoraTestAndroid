@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
 class LoginViewModel(private val authService: AuthService) : BaseViewModel() {
 
     val launchMainScreen = Command()
-    val loginCommand = Command()
+    private val loginCommand = Command()
 
     val username = NullableText()
     val usernameErrorText = Text()

@@ -40,7 +40,7 @@ fun Fragment.bindVisible(stateFlow: Visible, view: View, asInvisible: Boolean = 
         }
     }.launchWhenStarted(viewLifecycleOwner, lifecycleScope)
 
-fun Fragment.onClickListener(view: View, block: () -> Unit) {
+fun onClickListener(view: View, block: () -> Unit) {
     view.setOnClickListener { block() }
 }
 
