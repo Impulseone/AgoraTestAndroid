@@ -1,18 +1,18 @@
 package com.example.agoratestandroid.services
 
-import com.example.agoratestandroid.common.chatManager.RtmClientManager
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.services.interfaces.AuthService
 import io.agora.rtm.ErrorInfo
 import io.agora.rtm.ResultCallback
+import io.agora.rtm.RtmClient
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-class AuthServiceImpl(private val rtmClientManager: RtmClientManager) : AuthService {
+class AuthServiceImpl(private val rtmClient: RtmClient) : AuthService {
     override fun login(username: String): Flow<LoadingResult<Boolean>> = callbackFlow {
         trySend(LoadingResult.Loading)
-        rtmClientManager.rtmClient.login(
+        rtmClient.login(
             null,
             username,
             object : ResultCallback<Void?> {
@@ -31,7 +31,7 @@ class AuthServiceImpl(private val rtmClientManager: RtmClientManager) : AuthServ
 
     override fun logout(): Flow<LoadingResult<Boolean>> = callbackFlow {
         trySend(LoadingResult.Loading)
-        rtmClientManager.rtmClient.logout(object : ResultCallback<Void?> {
+        rtmClient.logout(object : ResultCallback<Void?> {
             override fun onSuccess(p0: Void?) {
                 trySend(LoadingResult.Success(true))
             }

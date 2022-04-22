@@ -2,7 +2,6 @@
 
 package com.example.agoratestandroid.services
 
-import com.example.agoratestandroid.common.chatManager.RtmClientManager
 import com.example.agoratestandroid.common.utils.ImageUtils
 import com.example.agoratestandroid.models.LoadingResult
 import com.example.agoratestandroid.services.interfaces.AttachmentService
@@ -14,9 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.io.File
 
-
 class AttachmentServiceImpl(
-    private val rtmClientManager: RtmClientManager,
+    private val rtmClient: RtmClient,
     private val imageUtils: ImageUtils
 ) : AttachmentService {
 
@@ -25,7 +23,7 @@ class AttachmentServiceImpl(
         file: File
     ) = callbackFlow {
         trySend(LoadingResult.Loading)
-        rtmClientManager.rtmClient.createImageMessageByUploading(
+        rtmClient.createImageMessageByUploading(
             file.path,
             RtmRequestId(),
             object : ResultCallback<RtmImageMessage?> {
@@ -46,7 +44,7 @@ class AttachmentServiceImpl(
     ): Flow<LoadingResult<RtmFileMessage>> = callbackFlow {
         trySend(LoadingResult.Loading)
         val requestId = RtmRequestId()
-        rtmClientManager.rtmClient.createFileMessageByUploading(
+        rtmClient.createFileMessageByUploading(
             file.path,
             requestId,
             object : ResultCallback<RtmFileMessage?> {
@@ -68,7 +66,7 @@ class AttachmentServiceImpl(
     ): Flow<LoadingResult<Unit>> = callbackFlow {
         trySend(LoadingResult.Loading)
         val requestId = RtmRequestId()
-        rtmClientManager.rtmClient.downloadMediaToFile(
+        rtmClient.downloadMediaToFile(
             mediaId,
             filePath,
             requestId,
@@ -96,7 +94,7 @@ class AttachmentServiceImpl(
                 this,
                 file
             )
-            rtmClientManager.rtmClient.sendMessageToPeer(
+            rtmClient.sendMessageToPeer(
                 peerId,
                 configuredImage,
                 SendMessageOptions(),
@@ -123,7 +121,7 @@ class AttachmentServiceImpl(
         peerId: String
     ) {
         rtmFileMessage?.apply {
-            rtmClientManager.rtmClient.sendMessageToPeer(
+            rtmClient.sendMessageToPeer(
                 peerId,
                 rtmFileMessage,
                 SendMessageOptions(),

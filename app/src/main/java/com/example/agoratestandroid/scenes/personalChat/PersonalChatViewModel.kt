@@ -9,6 +9,7 @@ import com.example.agoratestandroid.models.PeerMessageItem
 import com.example.agoratestandroid.models.State
 import com.example.agoratestandroid.services.interfaces.AttachmentService
 import com.example.agoratestandroid.services.interfaces.ChatService
+import io.agora.rtm.RtmClientListener
 import io.agora.rtm.RtmFileMessage
 import io.agora.rtm.RtmImageMessage
 import kotlinx.coroutines.flow.launchIn
@@ -17,7 +18,8 @@ import java.io.File
 
 class PersonalChatViewModel(
     private val chatService: ChatService,
-    private val attachmentService: AttachmentService
+    private val attachmentService: AttachmentService,
+    chatRtmListener: RtmClientListener
 ) : BaseViewModel() {
 
     val messagesList = DataList<PeerMessageItem>()
@@ -26,11 +28,8 @@ class PersonalChatViewModel(
 
     private val sendMessageState = State()
 
-    private val chatRtmListener = ChatRtmListener()
-
     init {
-        with(chatRtmListener) {
-            chatService.listenReceivedMessages(this)
+        with(chatRtmListener as ChatRtmListener) {
             receivedMessageFlow.onEach {
                 val updatedList =
                     messagesList.value.data.toMutableList()
@@ -49,7 +48,7 @@ class PersonalChatViewModel(
     }
 
     fun sendPeerMessage(fromId: String, toId: String, text: String) {
-        chatService.sendPeerMessage(PeerMessage(fromId, toId, text)).onEach {
+        chatService.sendPeerMessage(PeerMessage(fromId, toId, text), true).onEach {
             when (it) {
                 is LoadingResult.Success -> {
                     val updatedList = messagesList.value.data.toMutableList()
@@ -130,10 +129,5 @@ class PersonalChatViewModel(
                 is LoadingResult.Empty -> {}
             }
         }.processThrowable().launchIn(viewModelScope)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        chatService.stopListeningMessages(chatRtmListener)
     }
 }

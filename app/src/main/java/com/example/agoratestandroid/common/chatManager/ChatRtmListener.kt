@@ -22,13 +22,11 @@ class ChatRtmListener : RtmClientListener {
 
     val receivedFileMessageFlow: Flow<RtmFileMessage> = _receivedFileMessageFlow.asSharedFlow()
 
-    override fun onConnectionStateChanged(p0: Int, p1: Int) {
-
+    override fun onConnectionStateChanged(state: Int, reason: Int) {
     }
 
     override fun onMessageReceived(p0: RtmMessage?, p1: String?) {
         p0?.apply { _receivedMessageFlow.tryEmit(this.text) }
-
     }
 
     override fun onImageMessageReceivedFromPeer(p0: RtmImageMessage?, p1: String?) {
@@ -51,7 +49,6 @@ class ChatRtmListener : RtmClientListener {
 
     }
 
-    override fun onPeersOnlineStatusChanged(p0: MutableMap<String, Int>?) {
-
+    override fun onPeersOnlineStatusChanged(status: MutableMap<String, Int>?) {
     }
 }
